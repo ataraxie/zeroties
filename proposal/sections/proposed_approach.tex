@@ -1,0 +1,32 @@
+\section{Proposed Approach}
+\label{sec:approach}
+
+Our goal is to build a framework to facilitate the development of offline client-server Web applications that robustly recover from server faults. 
+We posit that the following features are prerequisites to achieving this:
+
+\begin{enumerate}
+    \item Any client, but exactly one client, has the ability to automatically assume the responsibilities of the server if the server goes down;
+    \item All clients in the network have the capability to automatically update their connections to the new server in the event that the server migrates from one node to another;
+    \item (Optional, if we have time) The initial server node has the ability to resume responsibilities of the server once it comes back online (and can be reasonably believed to be robustly online)
+    
+\end{enumerate}
+
+The model we propose for achieving this is one in which clients connecting to the server automatically acquire distributed state including the following elements:
+
+\begin{enumerate}
+	\item Constant: A UUID for the initial host node (the first to serve the application);
+    \item The current state of the server;
+	\item A ``successorship'' list: a list of (potentially not all of the) nodes in the local network, in order of ``who is next'' to assume server responsibilities, in the event that the server goes down;
+    \item Constant: The actual server code to execute, in the event that one of the clients needs to begin acting as the server.
+\end{enumerate}
+
+Note that the elements marked ``(Constant)'' are permanently fixed (for the lifetime of the application) when the initial server node first runs the application server.
+
+We propose to develop a Javascript library that implements the functionality listed above, providing a clean interface to enable developers to seamlessly integrate fault-tolerance into their offline client-server Web applications, without having to worry about the details of how such fault-tolerance is achieved.
+
+\input{sections/api}
+
+\input{sections/replication_strategy}
+
+\input{sections/assumptions}
+
