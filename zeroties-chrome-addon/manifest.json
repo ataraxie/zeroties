@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "Zeroties",
+  "description": "Zeroties Description",
+  "version": "1",
+  "author": "Felix Grund",
+  "web_accessible_resources": ["zeroties-client.js"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "match_about_blank": true,
+      "js": ["zeroties-client.js"]
+    }
+  ]
+}
