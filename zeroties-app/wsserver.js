@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const {dnssdapi} = require("./dnssd-api");
+const {dnssdapi} = require("./dnssd-api-mock");
 
 const wss = new WebSocket.Server({ port: 3005 });
 
@@ -52,7 +52,7 @@ function startPollingServices() {
 			}
 
 		});
-		setTimeout(doPoll, 4000);
+		setTimeout(doPoll, 1000);
 	};
 	doPoll();
 }
@@ -85,6 +85,10 @@ wss.on("connection", function(client) {
 			error("Message was not in JSON format");
 		}
 	});
+	client.on('close', function() {
+		delete clients[clientId];
+	});
 });
+
 
 startPollingServices();

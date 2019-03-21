@@ -1,0 +1,30 @@
+#zeroties-container {
+    height: 200px;
+    text-align: center;
+}
+
+#zeroties-services {
+    padding: 0;
+    width: 300px;
+}
+
+#zeroties-services li {
+    height: 30px;
+    border: 1px solid #ccc;
+}
+
+#zeroties-services li a {
+    line-height: 30px;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 16px;
+    height: 100%;
+    vertical-align: middle;
+    width: 100%;
+    color: #000000c2;
+}
+
+#zeroties-services li a:hover {
+    background: #a1d4dc;
+    cursor: pointer;
+}

@@ -1,18 +1,21 @@
-console.log("Zeroties");
 (function() {
 
-	var ws = new WebSocket('ws://localhost:3005');
+	try {
+		let ws = new WebSocket('ws://localhost:3005');
 
-	ws.addEventListener('open', function (event) {
-		console.log("WS OPEN");
-	});
+		ws.addEventListener('open', function (event) {
+			console.log("WS OPEN");
+		});
 
-	ws.addEventListener('message', function (event) {
-		var payload = JSON.parse(event.data);
-		if (payload.method === "servicesChanged") {
-			console.log(payload.services);
-		}
-	});
+		ws.addEventListener('message', function (event) {
+			var payload = JSON.parse(event.data);
+			if (payload.method === "servicesChanged") {
+				console.log(payload.services);
+			}
+		});
+	} catch (err) {
+		console.log("Could not establish WS connection");
+	}
 
 
 	// setTimeout(function() {
