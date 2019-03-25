@@ -15,7 +15,7 @@ function advertise(name, address, callback) {
 	options.name = name;
 	options.host = address;
 	ads[name + address] = new dnssd.Advertisement(dnssd.tcp('http'), 4321, options);
-	ad.start();
+    ads[name + address].start();
 	response.status = 200;
 	callback(response)
 }
