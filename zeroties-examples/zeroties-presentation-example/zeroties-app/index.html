@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html data-flyweb-role="server">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Successorships Presentation</title>
+    <link rel="stylesheet" href="css/zenburn.css"/>
+    <link rel="stylesheet" href="css/reveal.css"/>
+    <link rel="stylesheet" href="css/black.css"/>
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <link rel="stylesheet" type="text/css" href="css/app-reveal-overrides.css">
+</head>
+<body>
+
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1 id="successorships">Zeroties</h1>
+            <h2 id="fault-tolerant-local-webapps">A pub/sub service for applications in local ad-hoc networks</h2>
+            <p>Chris Satterfield, Felix Grund</p>
+        </section>
+        <section>
+            <h2 id="overview">Outline</h2>
+            <ul>
+                <li>
+                    <p>Motivation</p>
+                </li>
+                <li>
+                    <p>Zeroties</p>
+                </li>
+                <li>
+                    <p>Evaluation &amp; Future work</p>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2 id="context">Previous course project</h2>
+            <ul>
+                <li>CPSC527 (Networking)</li>
+                <li>Successorships: Fault-tolerant local WebApps</li>
+            </ul>
+            <p><img src="jpg/motivation-devices.jpg" alt="devices"></p>
+        </section>
+        <section>
+            <h2 id="context">Context</h2>
+            <ul>
+                <li>Networking capabilities are becoming ubiquitous across different types of devices</li>
+            </ul>
+            <p><img src="jpg/motivation-devices.jpg" alt="devices"></p>
+        </section>
+        <section>
+            <h2 id="context-2">...and in the Future?</h2>
+            <p><img src="png/zeroconf-webapps.png" alt="devices"></p>
+        </section>
+        <section>
+            <blockquote>
+                <p>How do we configure these devices in a local-area network?</p>
+            </blockquote>
+        </section>
+        <section>
+            <h2 id="back-in-the-day-">Back in the day...</h2>
+            <p><img src="jpg/motivation-printer-setup.jpg" alt="printer-setup"></p>
+        </section>
+        <section>
+            <h2 id="zero-configuration-networking-zeroconf-">Zeroconf</h2>
+            <ul>
+                <li>Zero-configuration networking</li>
+                <li>Discovers computers or peripherals in a network automatically</li>
+            </ul>
+            <!-- * Without it, network administrators must configure devices using Dynamic Hosting Configuration Protocols (<code>DHCP</code>) and the Domain Name System (<code>DNS</code>) -->
+        </section>
+        <section>
+            <h2 id="zeroconf">Zeroconf</h2>
+            <ul>
+                <li>
+                    <p><code>mDNS</code> (service advertisement) </p>
+                </li>
+                <li>
+                    <p><code>DNS-SD</code> (service discovery)</p>
+                </li>
+            </ul>
+            <p><img src="jpg/chrome-cast.jpg" alt="chrome-cast"></p>
+        </section>
+        <section>
+            <h2 id="goals">Successorships</h2>
+            <ul>
+                <li>
+                    <p>Provide an easy-to-use API to build Zeroconf browser apps</p>
+                </li>
+                <li>
+                    <p>Decouple Zeroconf logic from the application logic</p>
+                </li>
+                <li>
+                    <p>Seamlessly provide fault-tolerance to such apps</p>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2 id="api-overview">API Overview</h2>
+            <pre>
+                <code class="lang-javascript hljs">
+Shippy.register(serviceName, {
+    init: function
+    operations: { key=>function }
+});
+
+Shippy.call(operation, payload);
+
+Shippy.on(successorshipsEvent, callback);
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h2 id="example-queue-app">Example:</h2>
+            <ul>
+                <li>This presentation :-)</li>
+                <li>...Quick Demo...</li>
+            </ul>
+        </section>
+        <section>
+            <h2 id="successorship-stack">Successorships Stack</h2>
+            <p><img style="width: 50%; height: 50%" src="jpg/successorship-stack.jpg"></p>
+        </section>
+        <section>
+            <h2 id="successorship-stack">Successorships Stack</h2>
+            <p><img style="width: 50%; height: 50%" src="jpg/successorship-stack-problem.jpg"></p>
+        </section>
+        <section>
+            <h2>Problem: SO MANY <u>TIES</u>!</h2>
+            <p>Successorships depends on a few components</p>
+            <ul>
+                <li>An old developer version of Firefox...</li>
+                <li>...that had some core components...</li>
+                <li>...that made a now-abandoned Firefox addon called "Flyweb" work.</li>
+                <li>Actually. Even if these are met it only works on Mac. Because there's a bug. lol.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Our solution: <u>Zeroties</u>!</h2>
+            <p>In other words: do what Mozilla did. Just better. And generic.</p>
+        </section>
+        <section>
+            <h2>What did they have that we don't?</h2>
+            <ul>
+                <li>They have mDNS and DNS-SD and we don't</li>
+                <li>Service advertisment</li>
+                <li>Service discovery</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Zeroties</h2>
+            <ul>
+                <li>A pubsub service for Zeroconf apps</li>
+                <li>Independent of browsers (no ties!)</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Environment</h2>
+            <p><img style="width: 50%; height: 50%" src="png/zeroties.png"></p>
+        </section>
+        <section>
+            <h2>System model</h2>
+            <p>ad-hoc network apps, e.g.</p>
+            <ul>
+                <li>Students in a classroom collaborating on a document</li>
+                <li>An application for the heating system of a hotel</li>
+                <li>A class project presentation in a distributed systems grad course</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Domain specifics</h2>
+            <ul>
+                <li>Limited number of nodes
+                    <ul>
+                        <li>Say < 100</li>
+                    </ul>
+                </li>
+                <li>Weak requirements on consistency and fault tolerance
+                    <ul>
+                        <li>Say < 15 sec for recovery</li>
+                        <li>Could not be met in Successorships (sometimes > 45sec)</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>Design Goals</h2>
+            <ul>
+                <li><strong>Pubsub strategy</strong>: async notifications (§3.3 in pubsub paper)</li>
+                <li><strong>Consistency guarantees</strong>: converge to consistent list of services within 10sec when services exit/fail</li>
+                <li><strong>Fault tolerance</strong>: recovery within 10sec when nodes leave</li>
+                <li><strong>Performance</strong>:
+                    <ul>
+                        <li>Advertisement notifications within 10sec</li>
+                        <li>Live communication between Zeroties and its apps in milliseconds</li>
+                    </ul>
+                </li>
+                <li><strong>Reliability</strong>: system remains robust despite failing nodes
+                    <ul>
+                        <li>As long as DNS-SD communication in the network remains stable</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>Implementation</h2>
+            <ul>
+
+            </ul>
+        </section>
+
+
+        <section>
+            <blockquote>
+                <p>How do we plan to evaluate it?</p>
+            </blockquote>
+        </section>
+        <section>
+            <h2 id="evaluation">Evaluation</h2>
+            <ul>
+                <li>
+                    <p>Proof of concept apps: </p>
+                    <ul>
+                        <li>
+                            <p> <code>shippy-presentation</code></p>
+                        </li>
+                        <li>
+                            <p> <code>shippy-queue</code></p>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Establish small wireless network and log metrics</p>
+                    <ul>
+                        <li>
+                            <p>Recovery time, Messages RTT</p>
+                        </li>
+                        <li>
+                            <p>...as a function of packet size, # of connected clients</p>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2 id="future-work">Future Work</h2>
+            <ul>
+                <li>
+                    <p>Improve recovery time</p>
+                </li>
+                <li>
+                    <p>Keep track of all applied operations to reconstruct the state</p>
+                </li>
+                <li>
+                    <p>Handling network partition/merging</p>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2 id="thanks">Questions?</h2>
+        </section>
+    </div>
+</div>
+<div id="status-bar-wrap">
+    <div id="status-bar">
+        <div id="status-bar-text">
+            Service <span id="current-service-name"></span> running:<br /><a target="_blank" id="current-service-url"></a>
+        </div>
+    </div>
+    <div id="server-name-wrap">
+        <div id="server-name">
+        </div>
+    </div>
+    <div id="successors-wrap">
+        <div id="successors">
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js"></script>
+<script src="js/shippy.js"></script>
+<script src="js/highlight.js"></script>
+<script src="js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<!-- Our app -->
+<script src="js/app.js"></script>
+</body>
+</html>
