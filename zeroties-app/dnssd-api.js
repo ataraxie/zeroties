@@ -2,7 +2,7 @@ const dnssd = require('dnssd');
 
 ads = {};
 
-function stopAdvertising(name, address){
+function stopAdvertising(name, address) {
 	try{
 		ads[name + address].stop(false);
 	} catch (err) {

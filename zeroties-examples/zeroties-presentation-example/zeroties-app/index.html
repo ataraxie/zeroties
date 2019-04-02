@@ -202,45 +202,76 @@ Shippy.on(successorshipsEvent, callback);
             </ul>
         </section>
         <section>
-            <h2>Implementation</h2>
+            <h2>Zeroties Implementation (1)</h2>
             <ul>
-
-            </ul>
-        </section>
-
-
-        <section>
-            <blockquote>
-                <p>How do we plan to evaluate it?</p>
-            </blockquote>
-        </section>
-        <section>
-            <h2 id="evaluation">Evaluation</h2>
-            <ul>
-                <li>
-                    <p>Proof of concept apps: </p>
+                <li>NodeJS application
                     <ul>
-                        <li>
-                            <p> <code>shippy-presentation</code></p>
-                        </li>
-                        <li>
-                            <p> <code>shippy-queue</code></p>
-                        </li>
+                        <li>Standalone from browser details</li>
+                        <li>But leaves us options for browser integration (extensions)</li>
                     </ul>
                 </li>
+                <li>Websocket server for pubsub functionality
+                    <ul>
+                        <li>Async notification based pubsub</li>
+                        <li>Zeroties apps are Websocket clients</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>Zeroties Implementation (2)</h2>
+            <ul>
+                <li>Service discovery through DNS-SD polling
+                    <ul>
+                        <li>Zeroties polls the network for services in fixed intervals</li>
+                        <li>Alternative: dedicated leader Zeroties app and follower apps</li>
+                        <li>This would introduce complexity of communication between apps...</li>
+                        <li>...and waive the advantage of the authoritative service list within DNS-SD</li>
+                        <li>Polling approach is feasible in our environment</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>Zeroties API</h2>
+            <pre>
+                <code class="lang-javascript hljs">
+Zeroties.advertise(name);
+Zeroties.onServicesChanged(callback);
+                </code>
+            </pre>
+        </section>
+        <section>
+            <h2>Example: Successorships (this presentation)</h2>
+            <pre>
+                <code class="lang-javascript hljs">
+Zeroties.advertise("Zeroties presentation");
+Zeroties.onServicesChanged(function() {
+    // depending on environment possibly become client 
+    // or server (and change background etc.)
+});
+                </code>
+            </pre>
+        </section>
+
+        <section>
+            <h2>Repeat evaluation from Successorships</h2>
+            <ul>
                 <li>
                     <p>Establish small wireless network and log metrics</p>
-                    <ul>
-                        <li>
-                            <p>Recovery time, Messages RTT</p>
-                        </li>
-                        <li>
-                            <p>...as a function of packet size, # of connected clients</p>
-                        </li>
-                    </ul>
+                    <p style="text-align: center"><img style="width: 50%; height: 50%" src="jpg/eval-setup.jpg"></p>
                 </li>
             </ul>
         </section>
+        <section>
+            <h2>Results for Successorships without Zeroties</h2>
+            <div style="overflow:auto; text-align: center">
+                <img style="width: 30%; height: 30%; float: left" src="jpg/eval-server-recovery.jpg">
+                <img style="width: 30%; height: 30%; float: left" src="jpg/eval-client-connection.jpg">
+            </div>
+        </section>
+
+
         <section>
             <h2 id="future-work">Future Work</h2>
             <ul>

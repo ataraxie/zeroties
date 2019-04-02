@@ -11,7 +11,6 @@
 
 let servies = [];
 
-
 function establishWebsocket(servicesChangedCallback) {
     try {
         let ws = new WebSocket('ws://localhost:3005');
