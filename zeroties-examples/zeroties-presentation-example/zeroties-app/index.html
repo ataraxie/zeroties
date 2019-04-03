@@ -19,6 +19,16 @@
             <p>Chris Satterfield, Felix Grund</p>
         </section>
         <section>
+            <h2>TODOs for Presentation</h2>
+            <ul>
+                <li>Make it work in Chrome</li>
+                <li>Create proper diagram for "Environment" slide</li>
+                <li>Revise Zeroties API and usage example</li>
+                <li>Probably need to cut down presentation (too long)</li>
+                <li>More future work!</li>
+            </ul>
+        </section>
+        <section>
             <h2 id="overview">Outline</h2>
             <ul>
                 <li>
@@ -111,10 +121,7 @@ Shippy.on(successorshipsEvent, callback);
         </section>
         <section>
             <h2 id="example-queue-app">Example:</h2>
-            <ul>
-                <li>This presentation :-)</li>
-                <li>...Quick Demo...</li>
-            </ul>
+            <p>This presentation :-)</p>
         </section>
         <section>
             <h2 id="successorship-stack">Successorships Stack</h2>
@@ -125,7 +132,7 @@ Shippy.on(successorshipsEvent, callback);
             <p><img style="width: 50%; height: 50%" src="jpg/successorship-stack-problem.jpg"></p>
         </section>
         <section>
-            <h2>Problem: SO MANY <u>TIES</u>!</h2>
+            <h2>Problem 1: SO MANY <u>TIES</u>!</h2>
             <p>Successorships depends on a few components</p>
             <ul>
                 <li>An old developer version of Firefox...</li>
@@ -135,13 +142,21 @@ Shippy.on(successorshipsEvent, callback);
             </ul>
         </section>
         <section>
+            <h2>Problem 2: SLOOOW!</h2>
+            <ul>
+                <li>(Also due to dependency on FF implementation)</li>
+                <li>Recovery from server failure sometimes > 30sec</li>
+                <li>Client connection sometimes > 30sec</li>
+            </ul>
+        </section>
+        <section>
             <h2>Our solution: <u>Zeroties</u>!</h2>
-            <p>In other words: do what Mozilla did. Just better. And generic.</p>
+            <p>In other words: do what Mozilla did. Just better. And more generically.</p>
         </section>
         <section>
             <h2>What did they have that we don't?</h2>
             <ul>
-                <li>They have mDNS and DNS-SD and we don't</li>
+                <li>They have mDNS and DNS-SD in the browser</li>
                 <li>Service advertisment</li>
                 <li>Service discovery</li>
             </ul>
@@ -149,8 +164,13 @@ Shippy.on(successorshipsEvent, callback);
         <section>
             <h2>Zeroties</h2>
             <ul>
-                <li>A pubsub service for Zeroconf apps</li>
-                <li>Independent of browsers (no ties!)</li>
+                <li>A pubsub service for Zeroconf apps
+                    <ul>
+                        <li>Publish a Zeroties service and advertise it in the local network</li>
+                        <li>Subscribe for updates to the list of available Zeroties services</li>
+                    </ul>
+                </li>
+                <li>Independent of browsers</li>
             </ul>
         </section>
         <section>
@@ -202,7 +222,7 @@ Shippy.on(successorshipsEvent, callback);
             </ul>
         </section>
         <section>
-            <h2>Zeroties Implementation (1)</h2>
+            <h2>Zeroties Implementation</h2>
             <ul>
                 <li>NodeJS application
                     <ul>
@@ -253,9 +273,8 @@ Zeroties.onServicesChanged(function() {
                 </code>
             </pre>
         </section>
-
         <section>
-            <h2>Repeat evaluation from Successorships</h2>
+            <h2>Eval: Repeat from Successorships</h2>
             <ul>
                 <li>
                     <p>Establish small wireless network and log metrics</p>
@@ -264,26 +283,29 @@ Zeroties.onServicesChanged(function() {
             </ul>
         </section>
         <section>
-            <h2>Results for Successorships without Zeroties</h2>
+            <h2>Results without Zeroties</h2>
             <div style="overflow:auto; text-align: center">
-                <img style="width: 30%; height: 30%; float: left" src="jpg/eval-server-recovery.jpg">
-                <img style="width: 30%; height: 30%; float: left" src="jpg/eval-client-connection.jpg">
+                <img style="width: 35%; height: 30%; float: left" src="jpg/eval-server-recovery.jpg">
+                <img style="width: 35%; height: 30%; float: right" src="jpg/eval-client-connection.jpg">
             </div>
         </section>
-
-
+        <section>
+            <h2>Results with Zeroties</h2>
+            <blockquote>
+                <p style="font-size: 5em">?</p>
+            </blockquote>
+        </section>
         <section>
             <h2 id="future-work">Future Work</h2>
             <ul>
-                <li>
-                    <p>Improve recovery time</p>
+                <li>Get rid of app requirement
+                    <ul>
+                        <li>Cross-browser library</li>
+                        <li>Shipped as addons for browser</li>
+                        <li>Browser policy considerations</li>
+                    </ul>
                 </li>
-                <li>
-                    <p>Keep track of all applied operations to reconstruct the state</p>
-                </li>
-                <li>
-                    <p>Handling network partition/merging</p>
-                </li>
+                <li>Handling network partition/merging</li>
             </ul>
         </section>
         <section>
