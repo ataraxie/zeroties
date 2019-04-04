@@ -54,7 +54,7 @@ function startPollingServices() {
 		});
 		setTimeout(doPoll, 1000);
 	};
-	doPoll();
+	//doPoll();
 }
 
 wss.on("connection", function(client) {

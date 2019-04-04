@@ -105,21 +105,6 @@
             </ul>
         </section>
         <section>
-            <h2 id="api-overview">API Overview</h2>
-            <pre>
-                <code class="lang-javascript hljs">
-Shippy.register(serviceName, {
-    init: function
-    operations: { key=>function }
-});
-
-Shippy.call(operation, payload);
-
-Shippy.on(successorshipsEvent, callback);
-                </code>
-            </pre>
-        </section>
-        <section>
             <h2 id="example-queue-app">Example:</h2>
             <p>This presentation :-)</p>
         </section>
@@ -256,19 +241,15 @@ Shippy.on(successorshipsEvent, callback);
             <h2>Zeroties API</h2>
             <pre>
                 <code class="lang-javascript hljs">
-Zeroties.advertise(name);
-Zeroties.onServicesChanged(callback);
-                </code>
-            </pre>
-        </section>
-        <section>
-            <h2>Example: Successorships (this presentation)</h2>
-            <pre>
-                <code class="lang-javascript hljs">
-Zeroties.advertise("Zeroties presentation");
-Zeroties.onServicesChanged(function() {
-    // depending on environment possibly become client 
-    // or server (and change background etc.)
+navigator.publishServer("538B Presentation").then(function(server) {
+    // server object is api of small http/ws server
+}).catch(function (err) {
+    // ...
+});
+
+window.addEventListener('zerotiesServicesChanged', function(event) {
+    let services = JSON.parse(event.detail).services;
+    // ...
 });
                 </code>
             </pre>
@@ -300,9 +281,9 @@ Zeroties.onServicesChanged(function() {
             <ul>
                 <li>Get rid of app requirement
                     <ul>
-                        <li>Cross-browser library</li>
-                        <li>Shipped as addons for browser</li>
-                        <li>Browser policy considerations</li>
+                        <li>Using Zeroties requires a dedicated app</li>
+                        <li>It would be nice to have it entirely in the browser</li>
+                        <li>We haven't found a way (yet) due to security restrictions</li>
                     </ul>
                 </li>
                 <li>Handling network partition/merging</li>
