@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dnssd": "^0.4.1",
+    "express": "^4.16.4",
     "ws": "^6.2.0"
   }
 }

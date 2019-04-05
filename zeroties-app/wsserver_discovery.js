@@ -6,13 +6,6 @@ const wss = new WebSocket.Server({ port: 3005 });
 let clients = {};
 let services = [];
 
-function publish(name, address) {
-	console.log("Publish: " + name + " @ " + address);
-	dnssdapi.advertise(name, address, function(response) {
-		log("Publish: " + JSON.stringify(response));
-	});
-}
-
 function log(msg) {
 	console.log(msg);
 }
@@ -63,28 +56,6 @@ wss.on("connection", function(client) {
 	clients[clientId] = client;
 	log("NEWCLIENT: " + clientId);
 	sendServices(client);
-	client.on("message", function(msgJson) {
-		log("MESSAGE: " + msgJson);
-		try {
-			let msgObj = JSON.parse(msgJson);
-			if (msgObj.method && msgObj.data) {
-				if (msgObj.method === "publish") {
-					let payload = msgObj.data;
-					if (payload.name && payload.address) {
-						publish(payload.name, payload.address);
-					} else {
-						error("Expected fields name and address but found: ", JSON.stringify(payload));
-					}
-				} else {
-					error("Currently only 'publish' supported but found: ", msgObj.method);
-				}
-			} else {
-				error("Expected fields method and data but found: ", msgJson);
-			}
-		} catch (err) {
-			error("Message was not in JSON format");
-		}
-	});
 	client.on('close', function() {
 		delete clients[clientId];
 	});
