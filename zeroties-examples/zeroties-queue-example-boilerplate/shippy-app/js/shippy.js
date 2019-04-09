@@ -712,12 +712,19 @@ Shippy.Server = (function() {
 	}
 
 	function onFetch(event) {
+
 		Shippy.Util.log("ONFETCH");
 		let url = event.request.url;
-		let file = Shippy.Storage.get(url);
+		let l = document.createElement("a");
+		l.href = url;
+		let route = l.pathname;
+
+        console.log("route: " + route);
+		let file = Shippy.Storage.get(route);
+
 		if (file) {
 			let options = createOptions(file.mimeType);
-			if (url === '/' || url === '/index.html') {
+			if (route === '/' || route === '/index.html') {
 				event.respondWith(new Response(file.content, options));
 			} else {
 				let blob = Shippy.Util.dataURItoBlob(file.content);
@@ -824,7 +831,7 @@ Shippy.Server = (function() {
 		routes = Object.assign(routes, Shippy.internal.appSpec().operations);
 		Shippy.Util.log("BECOME SERVER");
 		// Now REALLY become the server!
-		navigator.publishServer(Shippy.internal.appName()).then(function(server) {
+		window.navigator.publishServer(Shippy.internal.appName()).then(function(server) {
 			Shippy.Util.log("New Server created for app:", Shippy.internal.appName());
 			// When we have a new server we want to start with a fresh succ list.
 			Shippy.internal.clearSuccessors();
