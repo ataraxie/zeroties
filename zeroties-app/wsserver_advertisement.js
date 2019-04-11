@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
-const zeroties = require('./ZerotiesServer');
-const {dnssdapi} = require("./dnssd-api-mock");
+const zeroties = require('./ZerotiesServer')
+const {dnssdapi} = require("./dnssd-api");
 
 const wss = new WebSocket.Server({ port: 3004 });
 
@@ -24,29 +24,27 @@ wss.on("connection", function(client) {
 	clients[clientId] = client;
 	log("NEWCLIENT: " + clientId);
     client.on("message", function(msgJson) {
-        log("MESSAGE: " + msgJson);
         try {
             let msgObj = JSON.parse(msgJson);
             if (msgObj.method && msgObj.data) {
                 if (msgObj.method === "publish") {
                     let payload = msgObj.data;
                     if (payload.name && payload.address) {
+                        client.appName = payload.name;
+                        client.address = payload.address;
                         publish(client, payload.name, payload.address);
-                    } else {
-                        error("Expected fields name and address but found: ", JSON.stringify(payload));
                     }
-                } else {
-                    error("Currently only 'publish' supported but found: ", msgObj.method);
                 }
-            } else {
-                error("Expected fields method and data but found: ", msgJson);
             }
         } catch (err) {
+            console.log(err)
             error("Message was not in JSON format");
         }
     });
 	client.on('close', function() {
-		delete clients[clientId];
+	    console.log("closing");
+        dnssdapi.stopAdvertising(client.appName, client.address);
+        delete clients[clientId];
 	});
 });
 

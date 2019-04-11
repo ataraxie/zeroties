@@ -19,16 +19,6 @@
             <p>Chris Satterfield, Felix Grund</p>
         </section>
         <section>
-            <h2>TODOs for Presentation</h2>
-            <ul>
-                <li>Make it work in Chrome</li>
-                <li>Create proper diagram for "Environment" slide</li>
-                <li>Revise Zeroties API and usage example</li>
-                <li>Probably need to cut down presentation (too long)</li>
-                <li>More future work!</li>
-            </ul>
-        </section>
-        <section>
             <h2 id="overview">Outline</h2>
             <ul>
                 <li>
@@ -160,7 +150,7 @@
         </section>
         <section>
             <h2>Environment</h2>
-            <p><img style="width: 50%; height: 50%" src="png/zeroties.png"></p>
+            <p><img src="png/zeroties.png"></p>
         </section>
         <section>
             <h2>System model</h2>
@@ -239,20 +229,7 @@
         </section>
         <section>
             <h2>Zeroties API</h2>
-            <pre>
-                <code class="lang-javascript hljs">
-navigator.publishServer("538B Presentation").then(function(server) {
-    // server object is api of small http/ws server
-}).catch(function (err) {
-    // ...
-});
-
-window.addEventListener('zerotiesServicesChanged', function(event) {
-    let services = JSON.parse(event.detail).services;
-    // ...
-});
-                </code>
-            </pre>
+            <p><img src="png/api.png" alt="api"></p>
         </section>
         <section>
             <h2>Eval: Repeat from Successorships</h2>

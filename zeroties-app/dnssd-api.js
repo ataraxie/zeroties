@@ -12,24 +12,33 @@ function stopAdvertising(name, address) {
 
 function advertise(name, address, callback) {
 	var options = {};
-	//options.name = name;
+	options.name = name;
 	//options.host = address;
 	ads[name + address] = new dnssd.Advertisement(dnssd.tcp('http'), 4321, options);
 	ads[name + address].start();
-	response.status = 200;
-	callback(response)
+	callback({status: 200})
 }
 
 const browser = new dnssd.Browser(dnssd.tcp('http')).start();
 
 function getServices(callback) {
 	response = {};
-	response.services = browser.list();
-	response.status = 200;
+	list = browser.list();
+	let services = [];
+	for(let item of list){
+        let service = {
+            serviceUrl: item.addresses[0] + ":9090",
+            serviceName: item.name
+        }
+        services.push(service);
+    }
+    response.services = services;
+    response.status = 200;
 	callback(response);
 }
 
 exports.dnssdapi = {
 	advertise,
-	getServices
+	getServices,
+	stopAdvertising
 };

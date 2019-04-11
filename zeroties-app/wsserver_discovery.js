@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const {dnssdapi} = require("./dnssd-api-mock");
+const {dnssdapi} = require("./dnssd-api");
 
 const wss = new WebSocket.Server({ port: 3005 });
 
@@ -47,7 +47,7 @@ function startPollingServices() {
 		});
 		setTimeout(doPoll, 1000);
 	};
-	//doPoll();
+	doPoll();
 }
 
 wss.on("connection", function(client) {

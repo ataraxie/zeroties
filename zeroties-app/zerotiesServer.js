@@ -3,12 +3,12 @@ const WebSocket = require("ws");
 const http = require('http');
 const uuidv4 = require('uuid/v4'); // generates a random uuid ( for client identification over websocket communication )
 const uuidv5 = require('uuid/v5'); // geenrates a consistent uuid for a given name and namespace combination
-
 const DEFAULT_HTTP_SERVER_PORT = 9090;
-
 
 function ZerotiesServer() {
     this.server = new http.Server();
+    this.clientsockets = {}
+
 }
 
 
@@ -24,7 +24,13 @@ ZerotiesServer.prototype.start = function(opts){
         this.server.listen({port: port, host: this.address});
         this.wss = new WebSocket.Server({server: this.server});
         this.server.on("request", (req,res) => {this.onRequest(req, res)});
-        this.wss.on("connection", (ws, req) => {this.onWebsocket(ws)});
+        this.wss.on("connection", (ws, req) => {
+            if(ws.protocol === "proxy"){
+                this.onProxy(ws, req);
+            } else {
+                this.onWebsocket(ws, req);
+            }
+        });
         resolve(true);
     })
 };
@@ -32,66 +38,103 @@ ZerotiesServer.prototype.start = function(opts){
 
 ZerotiesServer.prototype.registerHostSocket = function(socket){
     this.hostSocket = socket;
+    socket.on("close", () => {
+        this.server.close();
+        this.wss.close();
+    })
 };
 
-ZerotiesServer.prototype.onWebsocket = function(ws, req){
-    console.log("onWebsocket");
-    uuid = uuidv4();
-    data = {headers:req.headers};
-    msgObj = {method: 'wsConnectionRequest', data: data, uuid: uuid}
-    //todo: requests other than GET
-    //todo: timeout
-    this.hostSocket.send(JSON.stringify(msgObj));
-    var self = this;
+ZerotiesServer.prototype.onProxy = function(ws, req){
+    ws.addEventListener("message", proxyInit);
+    let self = this;
+    function proxyInit(e){
+        try{
+            msgObj = JSON.parse(e.data);
+            console.log(msgObj)
+            if(msgObj.method && msgObj.method == "init"){
+                ws.removeEventListener("message", proxyInit);
+                let uuid = msgObj.uuid;
+                let socket = self.clientsockets[uuid];
 
-    //expect a response to this websocket of the format {method: "response", body: JSON.stringified Buffer}
-    function responseHandler(response){
-        try {
-            let msgObj = JSON.parse(response);
-            if (msgObj.method == "wsConnectionResponse" && msgObj.data) {
-                if(msgObj.data.status == 200){
-                    //todo: something here
-                    //msgobj contains event subscriptions
-                }
-                self.hostSocket.removeListener("message", responseHandler);
+                ws.on("message", function(e){
+                    console.log("forward from server to client", uuid);
+                    socket.send(e);
+                });
+                ws.on("close", function(){
+                    socket.terminate();
+                    delete self.clientsockets[uuid];
+                });
+                //todo: onerror handling?
+
+                socket.on("message", function(e){
+                    console.log("forward from client to server", uuid);
+                    ws.send(e);
+                });
+                socket.on("close", function(){
+                    ws.terminate();
+                    delete self.clientsockets[uuid];
+                });
+                socket.state = "READY";
+                socket.completeHandshake && socket.completeHandshake();
             }
-        } catch (err) {
-            error("Message was not in JSON format");
+        } catch(err){
+            console.error("message not in JSON format");
+            console.error(err);
         }
     }
-    this.hostSocket.on("message", responseHandler);
 
+}
+
+ZerotiesServer.prototype.onWebsocket = function(ws, req){
+    let uuid = uuidv4();
+    let data = {serverAddress:"ws://localhost:9090"}; //TODO: fix this
+    let msgObj = {method: 'wsForward', data: data, uuid: uuid};
+    this.hostSocket.send(JSON.stringify(msgObj));
+    var self = this;
+    this.clientsockets[uuid] = ws;
+    this.hostSocket.on("message", proxyHandshake)
+
+    function proxyHandshake(e){
+        msgObj = JSON.parse(e);
+        console.log(msgObj)
+        if(msgObj.method && msgObj.method === "wsForwardResponse"){
+            self.hostSocket.removeEventListener("message", proxyHandshake)
+            function completeHandshake(){
+                console.log("complete");
+                message = {method: "wsProxyHandshake", uuid: msgObj.uuid}
+                self.hostSocket.send(JSON.stringify(message));
+            }
+            if(ws.state && ws.state === "READY"){
+                completeHandshake();
+            }
+            else{
+                ws.completeHandshake = completeHandshake;
+            }
+        }
+    }
 }
 
 ZerotiesServer.prototype.subscribeClientToWSEvent = function(client, uuid, event){
-    client.on(event, function(e){
-        client.send({uuid: uuid, payload: e, event: event})
+    client.on(event, (e) => {
+        this.hostSocket.send(JSON.stringify({method: 'wsEventRequest', uuid: uuid, payload: JSON.parse(e), event: event}))
     });
-    client.on("message", (msgJson) => {
-        msgObj = JSON.parse(msgJson);
-        msgObj.uuid = uuid;
-        this.hostSocket.send(JSON.stringify(msjObj))
-    })
 }
 
 ZerotiesServer.prototype.onRequest = function(req, res){
-    console.log("onRequest");
-    data = {headers:req.headers, url: req.url}
-    msgObj = {method: 'request', data: data}
+    let uuid = uuidv4(); //we need a uuid to distinguish between responses for different requests
+    data = {headers:req.headers, url: req.url};
+    msgObj = {method: 'request', data: data, uuid: uuid};
     //todo: requests other than GET
     //todo: timeout
     this.hostSocket.send(JSON.stringify(msgObj));
     var self = this;
-
-    //expect a response to this websocket of the format {method: "response", body: stringified UTF-16 ArrayBuffer}
+    //expect a response to this websocket of the format {method: "response", body: stringified UTF-8 ArrayBuffer}
     function responseHandler(response){
         try {
-            console.log(response);
             let msgObj = JSON.parse(response);
-            if (msgObj.method == "response" && msgObj.body) {
+            if (msgObj.method == "response" && msgObj.body && msgObj.uuid == uuid) {
                 let ab = str2ab(msgObj.body);
                 let buf = Buffer.from(ab);
-                console.log("response");
                 self.sendResponse(buf, res);
                 self.hostSocket.removeListener("message", responseHandler);
             }

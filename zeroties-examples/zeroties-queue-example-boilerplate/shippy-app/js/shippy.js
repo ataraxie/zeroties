@@ -124,6 +124,7 @@ let Shippy = (function() {
 
 	// Register the app
 	function register(appName, appSpec) {
+		console.log("called register");
 		env.appName = appName;
 		env.appSpec = appSpec;
 
@@ -135,6 +136,7 @@ let Shippy = (function() {
 		// When the app is registered and there is currently no FlyWeb service with that name, we
 		// want to become the server.
 		if (!env.currentFlywebService && shouldBecomeNextServer()) {
+			console.log("didnt find a service")
 			Shippy.Server.becomeServer();
 		}
 	}
@@ -286,6 +288,7 @@ let Shippy = (function() {
 	// a serviceName and serviceUrl field.
 	// Unfortunately, this is not always up-to-date, so we are confronted with delays.
 	window.addEventListener('flywebServicesChanged', function (event) {
+		console.log("recieved event");
 		// Reinit to null so if we don't find a service for our app right now we will now
 		env.currentFlywebService = null;
 		if (env.appName) { // If an app was registered
@@ -712,19 +715,16 @@ Shippy.Server = (function() {
 	}
 
 	function onFetch(event) {
-
 		Shippy.Util.log("ONFETCH");
-		let url = event.request.url;
-		let l = document.createElement("a");
-		l.href = url;
-		let route = l.pathname;
 
-        console.log("route: " + route);
-		let file = Shippy.Storage.get(route);
+        let l = document.createElement("a");
+        l.href = event.request.url;
+        let url = l.pathname;
 
-		if (file) {
+        let file = Shippy.Storage.get(url);
+        if (file) {
 			let options = createOptions(file.mimeType);
-			if (route === '/' || route === '/index.html') {
+			if (url === '/' || url === '/index.html') {
 				event.respondWith(new Response(file.content, options));
 			} else {
 				let blob = Shippy.Util.dataURItoBlob(file.content);
@@ -737,7 +737,9 @@ Shippy.Server = (function() {
 
 	// Run through all WS connections and send the state.
 	function broadcastState() {
+		console.log(wss);
 		for (let clientId in wss) {
+			console.log("broadcasting to " + clientId);
 			Shippy.Util.wsSend(wss[clientId], "stateupdate", {state: Shippy.internal.state()});
 		}
 	}
@@ -778,12 +780,18 @@ Shippy.Server = (function() {
 		// Whenever the server receives a message it calls the associated route that's extracted from the payload.
 		// The route will either be a mounted on from the app operations or a private _ one (e.g. _revealdoublerole).
 		ws.addEventListener("message", function(e) {
-			Shippy.Util.log("SERVER: MESSAGE");
 			let data = Shippy.Util.wsReceive(e);
+			console.log(data);
+			Shippy.Util.log("SERVER: MESSAGE");
 			let currentState = Shippy.internal.state();
-
-			if (ws.clientId){
-				Trace.log({ timestamp: Date.now(), event: 'shippy_server_received_'+data.route, source: Shippy.internal.clientId(), from: ws.clientId, pkgSize: Shippy.Util.payloadSize(data)});
+			if (ws.clientId) {
+				Trace.log({
+					timestamp: Date.now(),
+					event: 'shippy_server_received_' + data.route,
+					source: Shippy.internal.clientId(),
+					from: ws.clientId,
+					pkgSize: Shippy.Util.payloadSize(data)
+				});
 			}
 
 			routes[data.route] && routes[data.route](currentState, data.body);
@@ -831,7 +839,7 @@ Shippy.Server = (function() {
 		routes = Object.assign(routes, Shippy.internal.appSpec().operations);
 		Shippy.Util.log("BECOME SERVER");
 		// Now REALLY become the server!
-		window.navigator.publishServer(Shippy.internal.appName()).then(function(server) {
+		navigator.publishServer(Shippy.internal.appName()).then(function(server) {
 			Shippy.Util.log("New Server created for app:", Shippy.internal.appName());
 			// When we have a new server we want to start with a fresh succ list.
 			Shippy.internal.clearSuccessors();

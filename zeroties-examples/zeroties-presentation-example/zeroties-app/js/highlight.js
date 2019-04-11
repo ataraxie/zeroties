@@ -1,5 +1,9 @@
 // START CUSTOM REVEAL.JS INTEGRATION
-(function() {
+window.addEventListener('zerotiesServicesChanged', function (event) {
+    //
+})
+
+    (function() {
 	// Function to perform a better "data-trim" on code snippets
 	// Will slice an indentation amount on each line of the snippet (amount based on the line having the lowest indentation length)
 	function betterTrim(snippetEl) {
