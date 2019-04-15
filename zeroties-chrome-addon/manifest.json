@@ -13,7 +13,7 @@
     "default_title": "Google Mail",
     "default_popup": "zeroties-menu.html"
   },
-  "web_accessible_resources": ["zeroties-browser-api.js"],
+  "web_accessible_resources": ["zeroties-browser-api.js", "socket.io.js"],
   "content_scripts": [
     {
       "matches": ["*://*/*"],

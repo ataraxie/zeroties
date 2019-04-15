@@ -32,8 +32,6 @@ const fs = require('fs');
     }
 
 
-
-
     setTimeout(function() {
         let msgObj = {
             method: "publish",

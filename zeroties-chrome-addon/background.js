@@ -9,7 +9,7 @@
 // });
 
 
-let servies = [];
+let clients = {};
 
 function establishWebsocket(servicesChangedCallback) {
     try {
