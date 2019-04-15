@@ -1,0 +1,50 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Throughout the last decade we have seen the Internet become the most commonly used infrastructure for communication: regardless of physical location, people and their devices communicate via messengers and VoIP, and collaborate via live editing tools like, for example, Google Docs, Sheets, and, Slides. 
+At the same time, we have seen some applications communicating over local area networks become increasingly common for certain scenarios like home entertainment (e.g. Google Chromecast, Apple Bonjour, Spotify Connect) or Wi-Fi printers. 
+With the advancements of ``smart'' devices and the ``Internet of Things'' (IoT) it is likely that this trend will grow beyond these currently still largely hardened application domains.
+The adoption of standards that eliminate the burden of manual configuration of network devices further contributes to this movement.
+
+One such standard that has received widespread usage is Zero-configuration networking~\cite{guttman_2001} and its protocols mDNS~\cite{cheshire_2013_mdns} for service advertisement and DNS-SD for service discovery~\cite{cheshire_2013_dnssd}.
+Using the \textit{Zeroconf} protocols, devices can publish named services in the local network and discover such services automatically in an ad-hoc fashion.
+While most applications for Zeroconf networks are shipped with specific hardware (e.g. Google Chromecast dongle) there have recently been attempts to provide software environments for developers to enable them write their own applications on already existing hardware infrastructure.
+One such application was Mozilla FlyWeb\footnote{https://wiki.mozilla.org/FlyWeb}, an addon for the Firefox browser that made it possible to advertise and discover services from within Web applications through a JavaScript API.
+In a previous project, we created \textit{Successorships}~\footnote{https://github.com/ataraxie/successorships}, a JavaScript library exposing an easy-to-use API to build fault-tolerant Zeroconf web applications.
+Successorships was built on Mozilla Flyweb as one main part of its architecture.
+This decision confronted us with two significant problems:
+\begin{itemize}
+    \item Successorships had a hard dependency on Mozilla FlyWeb. However, FlyWeb was declared abandoned by Mozilla even before we finished our work on our library.
+    \item The implementation of the Zeroconf protocols was slow to a degree that made our library fairly unusable in practice.
+    \item On top of the dependency on FlyWeb and a past developer version Firefox, FlyWeb itself contained a bug that made our library only available on MacOS. 
+\end{itemize}
+
+In this paper, we introduce Zeroties, a platform-independent asynchronous publish/subscribe service for Zeroconf advertisement and discovery.
+We carefully reviewed different publish/subscribe designs~\cite{eugster_2003} and implemented a communication scheme based on \textit{asynchronous notifications}.
+In this sense, the operations exposed by Zeroties are as follows:
+\begin{itemize}
+    \item \textbf{Publish}: publish a Zeroties service and advertise it in the local network
+    \item \textbf{Subscribe}: listen for updates on the list of available Zeroties services
+\end{itemize}
+
+Zeroties is implemented as two parts: (1) a standalone OS-level application, and (2) addons for Chrome and Firefox that connect to this application.
+With our addon implementations for Chrome and Firefox we aim to show that our approach translates well between different browsers and does not share the restrictions of FlyWeb.
+Our browser addons expose an API to web applications that comprises the full service/discovery functionality of Zeroconf.
+As a result, we have successfully eliminated the ties that prevented Successorships from usage in practice.
+
+To evaluate Zeroties, we first created the webapp-based presentation for this project using Successorships in combination with the Zeroties app and the addon for Google Chrome.
+Running the presentation on Chrome proved that we successfully broke ties with FlyWeb and Mozilla Firefox.
+Furthermore, we could see in this example application that recovery from server failures was significantly faster than with the previous version based on FlyWeb.
+We finally repeated the performance measurements from the Successorships project, in which we simulated 29 server failures and subsequent recoveries in a small mobile network.
+We found that the system recovered in average about three times as fast with Zeroties than with FlyWeb.
+
+In summary, we make the following contributions:
+\begin{itemize}
+    \item Zeroties, a asynchronous standalone publish/subscribe service for Zeroconf applications.
+    \item Addons for Chrome and Firefox that make this service available to web applications.
+    \item An evaluation based on a Zeroties sample application and a reiteration of the Successorship measurements indicating significantly improved performance.
+\end{itemize}
+
+The remainder of this paper is organized as follows: Section~\ref{sec:problems} outlines the problems with the implementation of Successorships and its dependency on FlyWeb that motivated this work. Section~\ref{sec:approach} presents the system model and design goals of Zeroties, before Section~\ref{sec:implementation} describes its implementation. We evaluate Zeroties in Section~\ref{sec:evaluation} and suggest limitations and future work in Section~\ref{sec:limitations_and_future_work}. Section~\ref{sec:related_work} situates our work in the context of related research and Section~\ref{sec:conclusion} concludes the paper.
+
+
