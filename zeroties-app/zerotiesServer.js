@@ -50,6 +50,7 @@ ZerotiesServer.prototype.start = function(){
 
 ZerotiesServer.prototype.registerHostSocket = function(socket){
     this.hostSocket = socket;
+    this.hostSocket.setMaxListeners(0);
     socket.on("close", () => {
         this.server.close();
         this.wss.close();
@@ -173,6 +174,6 @@ function str2ab(str) {
 
 
 
-exports.getInstance = getInstance;
+exports.ZerotiesServer = ZerotiesServer;
 
 
