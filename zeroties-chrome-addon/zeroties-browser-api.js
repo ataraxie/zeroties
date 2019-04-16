@@ -12,21 +12,45 @@ function parse(e){
     }
 }
 
-function initServer(server) {
+function initServer(name) {
+    server = {};
 	return new Promise(function(fulfill, reject){
+
+	    /*
+	    setTimeout(function(){
+	        httpProxyWS.terminate();
+	        reject("timeout: did not initialize server in time")
+        }, 10000);
+        */
 
 		let httpProxyWS = new WebSocket('ws://localhost:3004');
 
         httpProxyWS.addEventListener("open", function(e) {
-            fulfill(server);
+            message = {method: "publish", data: {name: name, address: "0.0.0.0"}}
+            httpProxyWS.send(JSON.stringify(message));
         });
+
         httpProxyWS.addEventListener("message", function(e) {
-            let msgObj = parse(e)
-            if(msgObj.method && msgObj.method === 'request'){
+            let msgObj = parse(e);
+            if(msgObj.method && msgObj.method === 'connect'){
+                try{
+                    let success = msgObj.success;
+                    if(success){
+                        fulfill(server);
+                    }
+                    else{
+                        reject(msgObj.reason);
+                    }
+                }
+                catch(e){
+                        console.error("malformed JSON message")
+                        console.log(e);
+                }
+            }
+            else if(msgObj.method && msgObj.method === 'request'){
                 try{
                     let request = new Request(msgObj.data.url);
 
-                    //https://stackoverflow.com/questions/736513/how-do-i-parse-a-url-into-hostname-and-path-in-javascript
                     server.onfetch({request: request, respondWith: function(response){
                             response.arrayBuffer().then(function(ab){
                                 let buf = new Uint8Array(ab).reduce(function (data, byte) {return data + String.fromCharCode(byte);}, '');
@@ -68,12 +92,13 @@ function initServer(server) {
         httpProxyWS.addEventListener("close", function(e){
 			console.log(e);
 			console.log("CLOSE");
-		});
+            delete servers[name];
+        });
         httpProxyWS.addEventListener("error", function(e){
+            console.error(e);
 			console.log("ERROR");
-			reject(e);
+			reject(e)
 		});
-        server.ws = httpProxyWS;
     })
 }
 
@@ -82,13 +107,12 @@ window.navigator.publishServer = function(name) {
 		if (servers[name]) {
 			reject(`There is already a server with name ${name}`);
 		} else {
-			servers[name] = {};
-			initServer(servers[name]).then(function(server){
-                message = {method: "publish", data: {name: name, address: "0.0.0.0"}}
-                server.ws.send(JSON.stringify(message));
+            initServer(name).then(function(server) {
+                servers[name] = server;
                 fulfill(server);
-            }
-        );
+            }).catch((e) => {
+                reject(e);
+            });
 		}
 	});
 };

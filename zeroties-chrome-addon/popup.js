@@ -8,7 +8,8 @@ function updateUi() {
 	let $servicesList = $('#zeroties-services');
 	$servicesList.html('');
 	$.each(services, function(index, service) {
-		$servicesList.append(`<li><a href="${service.address}">${service.name}</a></li>`)
+		console.log(service);
+		$servicesList.append(`<li><a href="http://${service.serviceUrl}">${service.serviceName}</a></li>`)
 	});
 }
 
