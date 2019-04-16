@@ -5,34 +5,46 @@ const uuidv4 = require('uuid/v4'); // generates a random uuid ( for client ident
 const uuidv5 = require('uuid/v5'); // geenrates a consistent uuid for a given name and namespace combination
 const DEFAULT_HTTP_SERVER_PORT = 9090;
 
+
+var zerotiesServer;
+
+function getInstance(){
+    if(!zerotiesServer){
+        zerotiesServer = new ZerotiesServer();
+    }
+    return zerotiesServer;
+}
+
 function ZerotiesServer() {
     this.server = new http.Server();
     this.clientsockets = {}
-
 }
 
-
-ZerotiesServer.prototype.start = function(opts){
+ZerotiesServer.prototype.start = function(){
     console.log("start");
     return new Promise((resolve, reject) => {
-        if(opts){
-            port = opts.port;
+        if(this.server.listening){
+
         }
         else{
-            port = DEFAULT_HTTP_SERVER_PORT;
+            this.server.on("error", (e) => {
+                reject(e);
+            });
+            this.server.listen({port:9090}, () => {
+                this.wss = new WebSocket.Server({server: this.server});
+                this.server.on("request", (req,res) => {this.onRequest(req, res)}); //TODO: error handling - make sure socket is open
+                this.wss.on("connection", (ws, req) => {
+                    if(ws.protocol === "proxy"){
+                        this.onProxy(ws, req);
+                    } else {
+                        this.onWebsocket(ws, req);
+                    }
+                });
+                resolve(true);
+            });
+
         }
-        this.server.listen({port: port, host: this.address});
-        this.wss = new WebSocket.Server({server: this.server});
-        this.server.on("request", (req,res) => {this.onRequest(req, res)});
-        this.wss.on("connection", (ws, req) => {
-            if(ws.protocol === "proxy"){
-                this.onProxy(ws, req);
-            } else {
-                this.onWebsocket(ws, req);
-            }
-        });
-        resolve(true);
-    })
+    });
 };
 
 
@@ -161,6 +173,6 @@ function str2ab(str) {
 
 
 
-exports.ZerotiesServer = ZerotiesServer;
+exports.getInstance = getInstance;
 
 

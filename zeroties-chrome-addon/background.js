@@ -33,6 +33,7 @@ function establishWebsocket(servicesChangedCallback) {
 chrome.extension.onConnect.addListener(function(port) {
     console.log("CONNECT");
     establishWebsocket(function(services) {
+        console.log(services);
         port.postMessage(services);
     });
 });

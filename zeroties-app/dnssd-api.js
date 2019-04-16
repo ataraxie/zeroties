@@ -6,7 +6,7 @@ function stopAdvertising(name, address) {
 	try{
 		ads[name + address].stop(false);
 	} catch (err) {
-		error("stop error: service not found")
+		console.error("stop error: service not found")
 	}
 }
 
@@ -27,7 +27,7 @@ function getServices(callback) {
 	let services = [];
 	for(let item of list){
         let service = {
-            serviceUrl: item.addresses[0] + ":9090",
+            serviceUrl: item.addresses[0] + ":9090", //TODO: fix this
             serviceName: item.name
         }
         services.push(service);
