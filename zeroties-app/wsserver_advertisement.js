@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const ZerotiesServer = require('./ZerotiesServer')
+const zeroties = require('./ZerotiesServer')
 const {dnssdapi} = require("./dnssd-api");
 
 const wss = new WebSocket.Server({ port: 3004 });
@@ -9,7 +9,7 @@ let servers = {};
 
 async function publish(client, name, address) {
     console.log("Publish: " + name + " @ " + address);
-    zs = ZerotiesServer.getInstance();
+    zs = new zeroties.ZerotiesServer
     await zs.start().then(() => {
         zs.registerHostSocket(client);
         dnssdapi.advertise(name, address, function(response) {
