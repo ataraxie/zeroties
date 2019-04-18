@@ -1,7 +1,0 @@
-event,time,pkgSize,numSuccessors
-client_welcome,0.013,63,1
-client_welcome,0.012,77,2
-client_welcome,0.017,91,3
-client_welcome,0.014,77,1
-client_welcome,0.048,91,2
-client_welcome,0.031,77,1

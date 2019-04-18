@@ -57,6 +57,7 @@ function initServer(name) {
                     console.log(e);
                 }
             } else if (msgObj.method && msgObj.method === 'wsForward'){
+                console.log("FORWARD");
                 let forwardedClientWS = new WebSocket(msgObj.data.serverAddress, "proxy");
                 forwardedClientWS.addEventListener("open", function(){
                     let message = {method: "init", uuid: msgObj.uuid};

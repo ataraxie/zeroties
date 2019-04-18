@@ -24,7 +24,7 @@
   },
   "content_scripts": [
 	{
-    "matches": ["*://*/*"],
+    "matches": ["http://*/*"],
 	  "run_at": "document_start",
 	  "match_about_blank": true,
 	  "js": ["zeroties-content-script.js"]
