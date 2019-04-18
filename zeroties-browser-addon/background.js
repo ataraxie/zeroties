@@ -2,7 +2,7 @@ let clients = {};
 
 function establishWebsocket(servicesChangedCallback) {
     try {
-        let ws = new WebSocket('ws://localhost:3005');
+        let ws = new WebSocket('ws://localhost:3004');
 
         ws.addEventListener('open', function (event) {
             console.log("WS OPEN");

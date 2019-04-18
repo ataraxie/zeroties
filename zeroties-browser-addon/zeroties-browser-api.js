@@ -1,6 +1,8 @@
 
 var servers = {};
 
+const DEFAULT_WEBSOCKET_PORT = 3004
+
 function parse(e){
     try{
         let data = JSON.parse(e.data);
@@ -16,10 +18,10 @@ function initServer(name) {
     server = {};
 	return new Promise(function(fulfill, reject){
 
-		let httpProxyWS = new WebSocket('ws://localhost:3004');
+		let httpProxyWS = new WebSocket('ws://localhost:' + DEFAULT_WEBSOCKET_PORT);
 
         httpProxyWS.addEventListener("open", function(e) {
-            message = {method: "publish", data: {name: name, address: "0.0.0.0"}}
+            message = {method: "publish", data: {name: name}};
             httpProxyWS.send(JSON.stringify(message));
         });
 
@@ -116,7 +118,7 @@ if(!window.executed){
     function establishWebsocket(servicesChangedCallback) {
         console.log("establishws");
         try {
-            let ws = new WebSocket('ws://localhost:3004');
+            let ws = new WebSocket('ws://localhost:' + DEFAULT_WEBSOCKET_PORT);
 
             ws.addEventListener('open', function (event) {
                 console.log("WS OPEN");
