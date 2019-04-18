@@ -1,2 +1,38 @@
 \section{Implementation}
 \label{sec:implementation}
+
+\subsection{Languages and Platforms}
+\label{sub:languages_and_platforms}
+
+All components are written in JavaScript. 
+The Zeroties application is written using Node.js\footnote{https://nodejs.org/en/, accessed 2019-04-17}, the browser addons are written with the vendor-specific addon frameworks.
+We decided for JavaScript for all components due to several reasons:
+\begin{itemize}
+\item We wanted the OS-level Zeroties application be as platform-independent as possible. 
+Node.js is a stable environment on all major operating systems by now.
+\item We wanted to lean on a library implementing the low-level Zeroconf protocols.
+We found a capable, mature, and well-maintained library, \textit{dnssd}\footnote{https://www.npmjs.com/package/dnssd, accessed 2019-04-17} available for this purpose on Node.js.
+\item Browser addons must be implemented in JavaScript.
+Despite the fact that we could not integrate the core Zeroties functionality into our browser addons (see Section~\ref{sec:approach}) we still wanted to avoid  introducing a language barrier that would prevent us to do so even without browser-specific restrictions.
+\item Starting a HTTP server and a Websocket server in Node.js and connecting to these servers from an addon is inherently straight-forward.
+This functionality was required for our purpose.
+\end{itemize}
+
+\subsection{Zeroties Application}
+\label{sub:zeroties_application}
+
+TODO: Chris
+
+\subsubsection{API}
+
+\subsection{Browser Addons}
+\label{sub:browser_addons}
+
+TODO: Chris
+
+\subsubsection{API}
+
+\subsection{Communication and Control Flow in Zeroties}
+\label{sub:communication}
+
+TODO: Chris
