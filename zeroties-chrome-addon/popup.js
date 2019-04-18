@@ -13,17 +13,10 @@ function updateUi() {
 	});
 }
 
-port.postMessage("Hi BackGround");
 port.onMessage.addListener(function(msgJson) {
 	services = JSON.parse(msgJson);
 	updateUi();
 });
-
-
-function clickHandler(e) {
-	chrome.tabs.update({url: "https://example.com"});
-	window.close(); // Note: window.close(), not this.close()
-}
 
 $('#zeroties-services').on("click", "a", function() {
 	chrome.tabs.update({url: $(this).attr('href')});
