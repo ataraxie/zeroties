@@ -1,4 +1,16 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\cite{hong2007accelerating}
+\textbf{Publish/Subscribe} is a widespread messaging pattern that offers a rendezvous style channel for senders (publishers) and receivers (subscribers). 
+Using this pattern, participants do not need to be aware of what other specific participants are in the system and no direct communication channels between sender and receiver are required.
+This provides better scalability and more flexible network topology.
+The publish/subscribe pattern has been elaborated largely in both the distributed systems~\cite{eugster_2003, banavar_1999, eugster_2000} and software engineering~\cite{carzaniga_1998, cugola_2001, filho_2005} communities.
+
+\textbf{Zeroconf} has been investigated by several researchers both in terms of how the protocols can be improved~\cite{gunes_2002, bohnekamp_2003, jara_2012} and what problems they impose on networks~\cite{stolikj_2006, hong_2007}. The most widely available implementation of Zeroconf is Apple's \textit{Bonjour}~\footnote{https://support.apple.com/en-ca/bonjour, accessed 2019-04-17} software that is also available for Windows and Linux. There are also Linux-~\footnote{https://www.avahi.org/, accessed 2019-04-17} and similar Windows-specific~\footnote{http://techgenix.com/overview-link-local-multicast-name-resolution/, accessed 2019-04-17} implementations. These implementations are widely used by different applications to communicate in ad-hoc networks, including home entertainment (e.g. Google Chromecast~\footnote{https://store.google.com/product/chromecast, accessed 2019-04-17}, Amazon Fire TV~\footnote{https://amazonfiretv.blog, accessed 2019-04-17}), desktop applications (e.g. Adobe Photoshop~\footnote{https://www.adobe.com/products/photoshop.html, accessed 2019-04-17}, iTunes~\footnote{https://www.apple.com/ca/itunes/, accessed 2019-04-17}).
+
+\textbf{Zeroties.} In contrast to these platform-specific implementations and applications of Zeroconf, we are interested in providing a framework for web application developers to use the compelling ad-hoc networking characteristics of Zeroconf.
+Our approach provides this framework on top of the publish/subscribe pattern makes the compelling Zeroconf properties available to a wide variety of web applications in an efficient manner.
+To the best of our knowledge, Mozilla FlyWeb~\footnote{https://wiki.mozilla.org/FlyWeb, accessed 2019-04-17} has been the only attempt that shared our motivation of Zeroconf in-browser web servers.
+Unfortunately it had major problems (see Section~\ref{sec:background_and_motivation}) and has been abandoned by Mozilla.
+Zeroties not only extracts the functionality from Mozilla FlyWeb but also abstracts the implementation away from platform-specific details and fixes a range of issues in Mozilla's now-abandoned addon.
+In particular, it extends the compatibility from Firefox-only to Firefox and Chrome~\footnote{Zeroties is also easily adaptable for other browsers' addon ecosystems.}, and improves performance of Zeroconf communication at least by a factor of two.

@@ -4,7 +4,6 @@
   "description": "Zeroties Description",
   "version": "1",
   "author": "Felix Grund",
-  "web_accessible_resources": ["zeroties-client.js"],
   "permissions": ["contextMenus", "activeTab"],
   "background": {
     "scripts": ["background.js"]
@@ -13,7 +12,7 @@
     "default_title": "Google Mail",
     "default_popup": "zeroties-menu.html"
   },
-  "web_accessible_resources": ["zeroties-browser-api.js", "socket.io.js"],
+  "web_accessible_resources": ["zeroties-browser-api.js"],
   "content_scripts": [
     {
       "matches": ["*://*/*"],

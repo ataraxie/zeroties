@@ -16,13 +16,6 @@ function initServer(name) {
     server = {};
 	return new Promise(function(fulfill, reject){
 
-	    /*
-	    setTimeout(function(){
-	        httpProxyWS.terminate();
-	        reject("timeout: did not initialize server in time")
-        }, 10000);
-        */
-
 		let httpProxyWS = new WebSocket('ws://localhost:3004');
 
         httpProxyWS.addEventListener("open", function(e) {
