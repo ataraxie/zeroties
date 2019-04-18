@@ -115,7 +115,7 @@ if(!window.executed){
     function establishWebsocket(servicesChangedCallback) {
         console.log("establishws");
         try {
-            let ws = new WebSocket('ws://localhost:3005');
+            let ws = new WebSocket('ws://localhost:3004');
 
             ws.addEventListener('open', function (event) {
                 console.log("WS OPEN");
@@ -124,6 +124,7 @@ if(!window.executed){
             ws.addEventListener('message', function (event) {
                 var payload = JSON.parse(event.data);
                 if (payload.method === "servicesChanged") {
+                    console.log("services: ", payload.services);
                     servicesChangedCallback(payload.services);
                 }
             });

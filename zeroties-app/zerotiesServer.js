@@ -2,18 +2,6 @@
 const WebSocket = require("ws");
 const http = require('http');
 const uuidv4 = require('uuid/v4'); // generates a random uuid ( for client identification over websocket communication )
-const uuidv5 = require('uuid/v5'); // geenrates a consistent uuid for a given name and namespace combination
-const DEFAULT_HTTP_SERVER_PORT = 9090;
-
-
-var zerotiesServer;
-
-function getInstance(){
-    if(!zerotiesServer){
-        zerotiesServer = new ZerotiesServer();
-    }
-    return zerotiesServer;
-}
 
 function ZerotiesServer() {
     this.server = new http.Server();
@@ -30,7 +18,7 @@ ZerotiesServer.prototype.start = function(){
             this.server.on("error", (e) => {
                 reject(e);
             });
-            this.server.listen({port:9090}, () => {
+            this.server.listen(() => {
                 this.wss = new WebSocket.Server({server: this.server});
                 this.server.on("request", (req,res) => {this.onRequest(req, res)}); //TODO: error handling - make sure socket is open
                 this.wss.on("connection", (ws, req) => {
@@ -40,7 +28,7 @@ ZerotiesServer.prototype.start = function(){
                         this.onWebsocket(ws, req);
                     }
                 });
-                resolve(true);
+                resolve(this.server.address());
             });
 
         }
@@ -50,7 +38,7 @@ ZerotiesServer.prototype.start = function(){
 
 ZerotiesServer.prototype.registerHostSocket = function(socket){
     this.hostSocket = socket;
-    this.hostSocket.setMaxListeners(0);
+    this.hostSocket.setMaxListeners(0); // remove the limit on number of
     socket.on("close", () => {
         this.server.close();
         this.wss.close();
@@ -63,7 +51,6 @@ ZerotiesServer.prototype.onProxy = function(ws, req){
     function proxyInit(e){
         try{
             msgObj = JSON.parse(e.data);
-            console.log(msgObj)
             if(msgObj.method && msgObj.method == "init"){
                 ws.removeEventListener("message", proxyInit);
                 let uuid = msgObj.uuid;
@@ -100,7 +87,9 @@ ZerotiesServer.prototype.onProxy = function(ws, req){
 
 ZerotiesServer.prototype.onWebsocket = function(ws, req){
     let uuid = uuidv4();
-    let data = {serverAddress:"ws://localhost:9090"}; //TODO: fix this
+    let address = this.server.address();
+    console.log("onwebsocket:", address);
+    let data = {serverAddress:"ws://localhost:" + address.port}; //TODO: fix this
     let msgObj = {method: 'wsForward', data: data, uuid: uuid};
     this.hostSocket.send(JSON.stringify(msgObj));
     var self = this;
@@ -163,8 +152,9 @@ ZerotiesServer.prototype.sendResponse = function(content, response){
    response.end(content);
 };
 
+//converts a string to a Uint8 array buffer
 function str2ab(str) {
-    var buf = new ArrayBuffer(str.length); // 2 bytes for each char
+    var buf = new ArrayBuffer(str.length);
     var bufView = new Uint8Array(buf);
     for (var i=0, strLen=str.length; i < strLen; i++) {
         bufView[i] = str.charCodeAt(i);

@@ -6,13 +6,14 @@ const wss = new WebSocket.Server({ port: 3004 });
 
 let clients = {};
 let servers = {};
+let services = [];
 
 async function publish(client, name, address) {
     console.log("Publish: " + name + " @ " + address);
-    zs = new zeroties.ZerotiesServer
-    await zs.start().then(() => {
+    zs = new zeroties.ZerotiesServer;
+    await zs.start().then((addressObj) => {
         zs.registerHostSocket(client);
-        dnssdapi.advertise(name, address, function(response) {
+        dnssdapi.advertise(name, addressObj, function(response) {
             log("Publish: " + JSON.stringify(response));
         });
         servers[name] = zs;
@@ -27,6 +28,7 @@ wss.on("connection", function(client) {
 	client.clientId = clientId;
 	clients[clientId] = client;
 	log("NEWCLIENT: " + clientId);
+    sendServices(client);
     client.on("message", function(msgJson) {
         try {
             let msgObj = JSON.parse(msgJson);
@@ -38,11 +40,9 @@ wss.on("connection", function(client) {
                         client.address = payload.address;
                         console.log("publish");
                         publish(client, payload.name, payload.address).then(function(){
-                            console.log("success");
                             let message = {method: "connect", success: true};
                             client.send(JSON.stringify(message));
                         }).catch(function(e){
-                            console.log("fail");
                             let message = {method: "connect", success: false, reason: e};
                             client.send(JSON.stringify(message));
                         });
@@ -60,11 +60,49 @@ wss.on("connection", function(client) {
 	});
 });
 
-
 function log(msg) {
-	console.log(msg);
+    console.log(msg);
 }
 
 function error(msg) {
-	console.error(msg);
+    console.error(msg);
 }
+
+function deepEqual(obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
+function sendServices(client) {
+    client.send(JSON.stringify({
+        method: "servicesChanged",
+        services: services
+    }));
+}
+
+function broadcastServices() {
+    for (let clientId in clients) {
+        sendServices(clients[clientId]);
+    }
+}
+
+function startPollingServices() {
+    let doPoll = function() {
+        dnssdapi.getServices(function(response) {
+            if (response.status === 200) {
+                if (!deepEqual(services, response.services)) {
+                    log("servicesChanged: " + JSON.stringify(response));
+                    services = response.services;
+                    console.log("services here:", services)
+                    broadcastServices();
+                }
+            } else {
+                error("Status != 200 getting services");
+            }
+
+        });
+        setTimeout(doPoll, 1000);
+    };
+    doPoll();
+}
+
+startPollingServices();
