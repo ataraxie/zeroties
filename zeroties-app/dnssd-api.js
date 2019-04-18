@@ -1,6 +1,7 @@
 const dnssd = require('dnssd');
 
 ads = {};
+services = {};
 
 function stopAdvertising(name) {
 	try{
@@ -16,24 +17,34 @@ function advertise(name, addressObj, callback) {
 	//options.host = address;
 	ads[name] = new dnssd.Advertisement(dnssd.tcp('http'), addressObj.port, options);
 	ads[name].start();
+	ads[name].on("error", (e) => {console.error(e); ads[name].stop()});
 	callback({status: 200})
 }
 
-const browser = new dnssd.Browser(dnssd.tcp('http')).start();
+var browser = new dnssd.Browser(dnssd.tcp('http'));
+browser.on('serviceUp', function(service) {
+    services[service.name] = service;
+});
+browser.on('serviceDown', function(service){
+    delete services[service.name];
+});
+
+browser.start();
 
 function getServices(callback) {
-	response = {};
-	list = browser.list();
+	let response = {};
+	//list = browser.list();
 	//console.log(list);
-	let services = [];
-	for(let item of list){
+	let serviceList = [];
+	for(let item of Object.values(services)){
+		let url = item.addresses[0];
         let service = {
-            serviceUrl: item.addresses[0] + ":" + item.port, //TODO: fix this
+            serviceUrl:  url + ":" + item.port,
             serviceName: item.name
         }
-        services.push(service);
+        serviceList.push(service);
     }
-    response.services = services;
+    response.services = serviceList;
     response.status = 200;
 	callback(response);
 }
