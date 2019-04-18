@@ -2,8 +2,6 @@
 node_modules/
 .idea/
 **/.idea/
-shippy-measurement/output/*
-shippy-measurement/input/*
 .RHistory
 .RData
 

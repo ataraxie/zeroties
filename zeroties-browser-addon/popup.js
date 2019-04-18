@@ -1,8 +1,15 @@
 let services = [];
 
-let port = chrome.extension.connect({
-	name: "Sample Communication"
-});
+let zerotiesChannel = {
+	name: "Zeroties browser addon channel"
+};
+
+let port = null;
+if (chrome && chrome.extension && chrome.extension.connect) {
+	port = chrome.extension.connect(zerotiesChannel);
+} else if (browser && browser.runtime) {
+	port = browser.runtime.connect(zerotiesChannel);
+}
 
 function updateUi() {
 	let $servicesList = $('#zeroties-services');
@@ -19,6 +26,11 @@ port.onMessage.addListener(function(msgJson) {
 });
 
 $('#zeroties-services').on("click", "a", function() {
-	chrome.tabs.update({url: $(this).attr('href')});
+	var updateObject = {url: $(this).attr('href')};
+	if (chrome) {
+		chrome.tabs.update(updateObject);
+	} else if (browser) {
+		browser.tabs.update(updateObject);
+	}
 	window.close();
 });

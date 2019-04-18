@@ -19,12 +19,18 @@ function establishWebsocket(servicesChangedCallback) {
     }
 }
 
-chrome.extension.onConnect.addListener(function(port) {
-    console.log("CONNECT");
+function onConnectPort(port) {
     establishWebsocket(function(services) {
-        console.log(services);
+        console.log("ADDON PORT CONNECT");
         port.postMessage(services);
     });
-});
+}
+
+if (chrome && chrome.extension && chrome.extension.onConnect) {
+    chrome.extension.onConnect.addListener(onConnectPort);
+} else if (browser && browser.browserAction) {
+    browser.runtime.onConnect.addListener(onConnectPort)
+}
+
 
 
