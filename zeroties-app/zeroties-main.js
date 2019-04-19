@@ -13,7 +13,7 @@ let services = [];
 
 async function publish(client, name) {
     console.log("Publish: " + name);
-    zs = new zeroties.ZerotiesServer;
+    let zs = new zeroties.ZerotiesServer;
     await zs.start().then((addressObj) => {
         zs.registerHostSocket(client);
         dnssdapi.advertise(name, addressObj, function(response) {

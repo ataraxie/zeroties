@@ -85,7 +85,7 @@ let Shippy = (function() {
 			successors: [],
 			version: 0,
 		},
-		currentFlywebService: null,
+		currentZerotiesService: null,
 		appName: null,
 		appSpec: null,
 		clientId: null,
@@ -135,7 +135,7 @@ let Shippy = (function() {
 
 		// When the app is registered and there is currently no FlyWeb service with that name, we
 		// want to become the server.
-		if (!env.currentFlywebService && shouldBecomeNextServer()) {
+		if (!env.currentZerotiesService && shouldBecomeNextServer()) {
 			console.log("didnt find a service")
 			Shippy.Server.becomeServer();
 		}
@@ -208,7 +208,7 @@ let Shippy = (function() {
 
 	// Remove the first successor of the successors list if this successor does not become the new server after T seconds
 	function pruneUnreachableSuccessor() {
-		if (!env.currentFlywebService && !env.isConnected) {
+		if (!env.currentZerotiesService && !env.isConnected) {
 			if (waitingTime <= 0 && env.state.successors[0] !== env.clientId) {
 				Shippy.Util.log('A successor is unreachable after T seconds. Removing first successor from the successor list', env.state.successors);
 				Trace.log({ timestamp: Date.now(), event: 'shippy_client_prune_successor', source: clientId()});
@@ -269,7 +269,7 @@ let Shippy = (function() {
 	}
 
 	function currentFlywebService() {
-		return env.currentFlywebService;
+		return env.currentZerotiesService;
 	}
 
 	function initialHtml() {
@@ -301,7 +301,7 @@ let Shippy = (function() {
 			}
 
 			// If a service was set and we are not already connected we want to become a client
-			if (env.currentFlywebService && !env.isConnected) {
+			if (env.currentZerotiesService && !env.isConnected) {
 				resetWaitingTime();
 				Shippy.Client.becomeClient();
 			}
@@ -309,18 +309,18 @@ let Shippy = (function() {
 			// and (b) env.isConnected was set to false before due to a disconnect (initially it was null)
 			// and (c) we should become the next server based on the succ list etc.
 			// then really become the server
-			else if (!env.currentFlywebService && env.isConnected === false && shouldBecomeNextServer()) {
+			else if (!env.currentZerotiesService && env.isConnected === false && shouldBecomeNextServer()) {
 				resetWaitingTime();
 				Shippy.Server.becomeServer();
 			}
 			// If I' neither the next server, nor I'm connected I need to keep track of probable unreachable successors
 			// If after some time period now successor has assumed the server role, I need to update my successor list
 			// At some point, I'll be the next server, thus recovering from a chain of consecutive disconnections
-			else if (!env.currentFlywebService && !env.isConnected) {
+			else if (!env.currentZerotiesService && !env.isConnected) {
 				pruneUnreachableSuccessor();
 			}
 		}
-		Shippy.Util.log('Current Flyweb Service: ' + JSON.stringify(env.currentFlywebService));
+		Shippy.Util.log('Current Flyweb Service: ' + JSON.stringify(env.currentZerotiesService));
 	});
 
 	// When the document has loaded, we save the initial HTML such that it can be served by our Flyweb server.
@@ -353,7 +353,7 @@ let Shippy = (function() {
 			appSpec: appSpec,
 			state: state,
 			updateStateKeepSuccessors: updateStateKeepSuccessors,
-			currentFlywebService: currentFlywebService,
+			currentZerotiesService: currentFlywebService,
 			initialHtml: initialHtml,
 			serving: serving,
 			shouldBecomeNextServer: shouldBecomeNextServer
@@ -949,7 +949,7 @@ Shippy.Client = (function() {
 		// This is necessary in the client because state updates may carry operations rather than the entire state
 		routes = Object.assign(routes, Shippy.internal.appSpec().operations);
 		Shippy.Util.log("BECOME CLIENT");
-		ws = new WebSocket("ws://" + Shippy.internal.currentFlywebService().serviceUrl);
+		ws = new WebSocket("ws://" + Shippy.internal.currentZerotiesService().serviceUrl);
 
 		// Tell shippy that we are now connected.
 		ws.addEventListener("open", function(e) {
