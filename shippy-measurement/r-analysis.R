@@ -12,18 +12,18 @@ require("reshape2")
 # Change this line to your own path successorships path
 setwd('/Users/msarthur/Workspace/zeroties')
 
-serverRecovery <- read.csv(file="./shippy-measurement/output/serverRecovery.csv", head=TRUE, sep=",")
+serverRecovery <- read.csv(file="./shippy-measurement/output_new/serverRecovery.csv", head=TRUE, sep=",")
 serverRecovery <- filter(serverRecovery, time <= 200)
 
-clientWelcome <- read.csv(file="./shippy-measurement/output/clientWelcome.csv", head=TRUE, sep=",")
+clientWelcome <- read.csv(file="./shippy-measurement/output_new/clientWelcome.csv", head=TRUE, sep=",")
 summary(clientWelcome$numSuccessors)
 sd(clientWelcome$numSuccessors)
 clientWelcome$numSuccessors <- as.character(clientWelcome$numSuccessors)
 
-messageRTT <- read.csv(file="./shippy-measurement/output/messageRTT.csv", head=TRUE, sep=",")
+messageRTT <- read.csv(file="./shippy-measurement/output_new/messageRTT.csv", head=TRUE, sep=",")
 messageRTT$numSuccessors <- as.character(messageRTT$numSuccessors)
 
-stateConvergence <- read.csv(file="./shippy-measurement/output/stateConvergence.csv", head=TRUE, sep=",")
+stateConvergence <- read.csv(file="./shippy-measurement/output_new/stateConvergence.csv", head=TRUE, sep=",")
 stateConvergence$numSuccessors <- as.character(stateConvergence$numSuccessors)
 stateConvergence <- filter(stateConvergence, time < 400)
 
@@ -53,10 +53,25 @@ summary(stateConvergence$time)
 p <- ggplot(serverRecovery, aes(time)) + stat_ecdf(geom = "step")
 p <- p + labs(x = 'Server recovery time (s)')
 p <- p + labs(y = 'cdf')
-p <- p + scale_x_continuous(breaks = round(seq(0, max(serverRecovery$time), by = 5), 1))
+# p <- p + scale_x_continuous(breaks = round(seq(0, max(serverRecovery$time), by = 5), 1))
 p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 p <- p + theme_bw()
 p
+
+
+serverRecovery <- read.csv(file="./shippy-measurement/output_old/serverRecovery.csv", head=TRUE, sep=",")
+serverRecovery <- filter(serverRecovery, time <= 200)
+
+
+p <- ggplot(serverRecovery, aes(time)) + stat_ecdf(geom = "step")
+p <- p + labs(x = 'Server recovery time (s)')
+p <- p + labs(y = 'cdf')
+# p <- p + scale_x_continuous(breaks = round(seq(0, max(serverRecovery$time), by = 5), 1))
+p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
+p <- p + theme_bw()
+p
+
+
 
 
 pdf("/Users/msarthur/Workspace/zeroties/figures/server-recovery.pdf")
