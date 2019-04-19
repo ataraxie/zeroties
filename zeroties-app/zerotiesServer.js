@@ -83,7 +83,7 @@ ZerotiesServer.prototype.onProxy = function(ws, req){
         }
     }
 
-}
+};
 
 ZerotiesServer.prototype.onWebsocket = function(ws, req){
     let uuid = uuidv4();
