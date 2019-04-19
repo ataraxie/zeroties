@@ -91,7 +91,12 @@
 \begin{document}
 
 \begin{abstract}
-
+Despite the Internet having become the most commonly used infrastructure for communication over the last two decades, there is also a set of applications that communicate via local area ad-hoc networks. 
+While these are mostly scoped to dedicated domains like home entertainment and Wi-Fi printers, it is likely that this trend will grow with the advancements of ``smart'' devices and the ``Internet of Things''. 
+In a previous project, we built a framework for developing fault-tolerant web applications based on such local ad-hoc networks and the Zeroconf protocol suite. 
+A dependency to an obsolete Mozilla component made this framework slow and platform-dependent and made adoption in practice highly unlikely. 
+To overcome this, we present Zeroties, an asynchronous publish-subscribe service for web applications operating in local ad-hoc networks. 
+With a mixed-method evaluation we show that Zeroties effectively makes our framework platform-independent and recover from failures nearly 10 times faster than the previous version.
 \end{abstract}
 
 \maketitle

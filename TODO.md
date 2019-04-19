@@ -6,11 +6,32 @@
 
 # Paper
 
-* Figure approach: architecture
-
-* Finish Implementation section (incl. figure for control flow)
-
 * Abstract
+- Write
+
+* Introduction
+- Make link to Succ final
+
+* Motivation
+- Read
+
+* Approach
+- Read
+
+* Implementation
+- Read
+
 * Evaluation
-* Limitations and Future Work
+- Write
+
+* Limitations
+- Eval on Chrome
+- Scalability issues
+- Separate daemon
+- Expressiveness (URLs)
+
+* Related Work
+- Read
+
 * Conclusion
+- Write

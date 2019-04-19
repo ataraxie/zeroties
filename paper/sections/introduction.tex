@@ -26,16 +26,17 @@ The operations exposed by Zeroties are as follows:
     \item \textbf{Subscribe}: listen for updates on the list of available Zeroties services
 \end{itemize}
 
-Zeroties ships with two components: (1) a standalone OS-level application, and (2) addons for Chrome and Firefox that connect to this application.
+Zeroties ships with two components: (1) a standalone OS-level daemon, and (2) addons for Chrome and Firefox that connect to this daemon.
 With our addon implementations for Chrome and Firefox we aim to show that our approach translates well between different browsers and does not share the restrictions of FlyWeb.
 Our browser addons expose an API to web applications that comprises the full service/discovery functionality of Zeroconf.
 As a result, we have successfully eliminated the ties that prevented Successorships from usage in practice.
 
 To evaluate Zeroties, we first created the webapp-based presentation for this project using Successorships in combination with the Zeroties daemon and the addon for Google Chrome.
 Running the presentation on Chrome proved that we successfully broke ties with FlyWeb and Mozilla Firefox.
-Furthermore, we could see in this example application that recovery from server failures was significantly faster than with the previous version based on FlyWeb.
-To evaluate these findings empirically, we repeated the performance measurements from the Successorships project, both with the previous version based on FlyWeb and the new version based on Zeroties.
-We simulated XXX server failures and subsequent recoveries in a small mobile network and found that the system recovered in average about three times as fast with Zeroties than with FlyWeb.
+Furthermore, we could get a first sense in this example application that recovery from failures was significantly faster than with the previous version based on FlyWeb.
+To evaluate these findings empirically, we analyzed the changes in performance with a test scenario based on the evaluation framework from Successorships.
+We simulated ten failures on a small network of 6 nodes, first with the old FlyWeb-based implementation and then with the new version based on Zeroties.
+While recovery took on average 12.93 seconds with FlyWeb, it took only 1.55 seconds using Zeroties, indicating a speedup of nearly a factor of 10.
 
 In summary, we make the following contributions:
 \begin{itemize}
