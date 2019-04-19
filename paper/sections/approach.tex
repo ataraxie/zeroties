@@ -33,7 +33,7 @@ We have implemented addons for Google Chrome and Mozilla Firefox that constitute
 These addons use Zeroties as a publish/subscribe service.
 Furthermore, we have built a UI in form of a browser menu button and a popup that shows the currently available list of services.
 This UI is refreshed on-the-fly and mirrors the list of services in Zeroties.
-Note that the Zeroties daemon itself is not restricted to these addons; they are only required for web applications running in browsers.
+Note that the Zeroties daemon itself is not restricted to these addons; they only provide a useful abstraction to web applications running in browsers.
 Different applications can utilize the services provided by the Zeroties daemon without these components.
 
 \item \textbf{Publish/Subscribe operations}: applications built on top of Zeroties interact with the Zeroties daemon using the common publish/subscribe operations.
@@ -97,12 +97,12 @@ First, the \textit{publishing of services} and \textit{notifications about new s
 Our system should remain highly reliable as long as our DNS-SD communication scheme between Zeroties and the router is robust and the communication channels between Zeroties and its applications are stable.
 
 \textbf{Polling strategy:}
-We decided for a polling strategy for obtaining the list of services from the network router using DNS-SD.
+We decided on a polling strategy for obtaining the list of services from the network router using DNS-SD.
 The list of available services is updated based on changes detected between the last version of the services list in the Zeroties daemon and the most recently polled services list.
 Clearly, this polling strategy will impose traffic on the local network, with all Zeroties hosts polling the router for the services list.
 However, we argue that frequent changes in the available services list and the presumed low number of nodes in our system model justifies this approach.
 A different strategy which could allow for a larger number of nodes without the potential problem of overloading the router with requests would be to implement this communication with a dedicated Zeroties leader and followers, for example using Paxos~\cite{lamport_2001} or Raft~\cite{ongaro_2014}.
-However, this would mostly be a transformation of communication between Zeroties hosts and the router towards communication between Zeroties hosts. 
+However, this would mostly be a transformation of communication between Zeroties hosts and the router towards host-host communication. 
 More importantly, we would waive the advantage of the direct use of the authoritative list of services maintained by the network.
 Nevertheless, we are aware that a design with the leader-and-followers approach, despite adding significant complexity, would have advantages as soon as Zeroties networks reach a certain size.
 

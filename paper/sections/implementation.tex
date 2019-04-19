@@ -6,9 +6,9 @@
 
 All components are written in JavaScript. 
 The Zeroties daemon is written using Node.js\footnote{https://nodejs.org/en/, accessed 2019-04-17}, the browser addons are written with the vendor-specific addon frameworks.
-We decided for JavaScript for all components due to several reasons:
+We decided on JavaScript for all components due to several reasons:
 \begin{itemize}
-\item We wanted the OS-level Zeroties daemon be as platform-independent as possible. 
+\item We wanted the OS-level Zeroties daemon to be as platform-independent as possible. 
 Node.js is a stable environment on all major operating systems by now.
 \item We wanted to lean on a library implementing the low-level Zeroconf protocols.
 We found a capable, mature, and well-maintained library, \textit{dnssd}\footnote{https://www.npmjs.com/package/dnssd, accessed 2019-04-17} available for this purpose on Node.js.
@@ -78,9 +78,9 @@ This is the message that informs the Zeroties daemon that the application wishes
 {method: "servicesChanged", services: <array of services>}
 \end{lstlisting}
 This is the message sent by the Zeroties daemon whenever a change in the list of Zeroties services is detected.
+Table~\ref{tab:zeroties_protocol} outlines the messages sent from the Zeroties daemon sent to its applications that publish a service, as well as the expected responses to these messages.
 \end{itemize}
 
-Table~\ref{tab:zeroties_protocol} outlines the messages sent from the Zeroties daemon sent to its applications that publish a service, as well as the expected responses to these messages.
 
 \begin{table*}[h]
     \small
