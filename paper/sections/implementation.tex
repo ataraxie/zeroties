@@ -5,50 +5,179 @@
 \label{sub:languages_and_platforms}
 
 All components are written in JavaScript. 
-The Zeroties application is written using Node.js\footnote{https://nodejs.org/en/, accessed 2019-04-17}, the browser addons are written with the vendor-specific addon frameworks.
+The Zeroties daemon is written using Node.js\footnote{https://nodejs.org/en/, accessed 2019-04-17}, the browser addons are written with the vendor-specific addon frameworks.
 We decided for JavaScript for all components due to several reasons:
 \begin{itemize}
-\item We wanted the OS-level Zeroties application be as platform-independent as possible. 
+\item We wanted the OS-level Zeroties daemon be as platform-independent as possible. 
 Node.js is a stable environment on all major operating systems by now.
 \item We wanted to lean on a library implementing the low-level Zeroconf protocols.
 We found a capable, mature, and well-maintained library, \textit{dnssd}\footnote{https://www.npmjs.com/package/dnssd, accessed 2019-04-17} available for this purpose on Node.js.
 \item Browser addons must be implemented in JavaScript.
 Despite the fact that we could not integrate the core Zeroties functionality into our browser addons (see Section~\ref{sec:approach}) we still wanted to avoid  introducing a language barrier that would prevent us to do so even without browser-specific restrictions.
-\item Starting a HTTP server and a Websocket server in Node.js and connecting to these servers from an addon is inherently straight-forward.
+\item Starting a HTTP server and a WebSocket server in Node.js and connecting to these servers from an addon is inherently straight-forward.
 This functionality was required for our purpose.
 \end{itemize}
 
-\subsection{Zeroties Application}
-\label{sub:zeroties_application}
+\subsection{Zeroties Daemon}
+\label{sub:zeroties_daemon}
 
-what it is:
-- the core Zeroties app
-- any application wishing to use Zeroties must communicate with this app
+At the core of Zeroties is the Zeroties daemon.
+This is the piece of software that any application wishing to make use of the Zeroties services must connect to.
+The daemon runs continuously in the background on the users OS, operating a server to handle interactions with Zeroties applications.
+Zeroties applications are provided the following two pieces of core functionality by interacting with the Zeroties daemon:
+\begin{itemize}
+    \item The ability to publish services on the local network, via mDNS.
+    \item Notifications when the list of services available on the local network changes, as discovered via DNSSD.
+\end{itemize}
+The Zeroties daemon is also responsible for managing any client HTTP requests or WebSocket connections to the server published by a Zeroties application.
+Instead of handling these events directly, the daemon simply acts as a proxy, forwarding the events to the Zeroties app as approriate.
+This allows developers of Zeroties applications to easily define custom routing for HTTP requests recieved, and define custom actions to handle different WebSocket events.
 
-what does it do:
-- facilitates publishing services on the local network
-- notifies clients on updates to available services list
-- handles client connections and forwards to =
-
-how does it work:
-- services list is maintained/updated via mdns/dnssd
-- client apps connect to the Zeroties app via a Websocket connection
-- on connecting, clients are automatically subscribed to recieve updates about changes to the list of services
-- 
-
-could it be improved?:
+All communication between Zeroties applications and the Zeroties daemon is made via a WebSocket connection, following the protocol outlined below.
+On connecting to the daemon, applications are automatically subscribed to recieve notifications about changes to the list of Zeroties services available.
+The daemon repeatedly polls the network to retrieve the current list of Zeroties services using the DNSSD protocol.
+If the list of services retrieved from the network differs from the one currently held by the daemon, an event is triggered.
+This event is fired over the WebSocket connection to a listening Zeroties application.
+To publish a server, a Zeroties application sends a message to the daemon containing the name of the service to publish.
+The Zeroties daemon then spins up an HTTP server and a WebSocket server listening on the same port, and advertises the newly available service over the local network via mDNS.
 
 
-\subsubsection{API}
+% what it is:
+% - the core Zeroties daemon
+% - any application wishing to use Zeroties must communicate with this app
+
+% what does it do:
+% - facilitates publishing services on the local network
+% - notifies clients on updates to available services list
+% - handles client connections and forwards requests/messages to Zeroties app for handling (acts as a proxy)
+
+
+% how does it work:
+% - services list is maintained/updated via mdns/dnssd
+% - Zeroties apps connect to the Zeroties daemon via a Websocket connection
+% - on connecting, clients are automatically subscribed to recieve updates about changes to the list of services
+% - Zeroties apps notify the Zeroties daemon if they wish to publish a server
+% - clients connect to Zeroties daemon server
+% - server forwards to Zeroties app for handling via websockets
+% - Websocket communication allows us to define http request handling behaviour in the browser
+% - request/response protocol
+
+% could it be improved?:
+
+
+\subsubsection{Zeroties Communication Protocol}
+This section will outline the protocol that must be followed for communcation with the Zeroties daemon.
+\paragraph{Messages to the Zeroties Daemon}
+At the moment, there is only one supported message that may be sent to the Zeroties Daemon unprompted: the "publish" message.
+The message should send a stringified JSON object of the following format: \begin{verbatim}{method: "publish", payload: {name: appName}}\end{verbatim}
+This is the message that informs the Zeroties daemon that you wish to publish a server.
+
+\paragraph{Messages from the Zeroties Daemon}
+Any app connected to the Zeroties daemon should expect to recieve and handle a message in the following format:
+\begin{verbatim}{method: "servicesChanged", services: <array of services>}\end{verbatim}
+This is the message sent by the Zeroties daemon whenever a change in the list of Zeroties services is detected.
+
+In addition, \autoref{tab:zerotiesProtocol} outlines the messages any Zeroties app which publishes a server should expect to see, as well as the expected responses to these messages.
+
+
+\begin{table*}[h]
+    \small
+    \centering
+\begin{tabularx}{\textwidth}{|l|l|l|l|}
+    \hline
+Method      & Response            & Response to response & Purpose                                                                                                                       \\
+\hline
+"request"   & "response"          &                      & Dispatches an incoming HTTP request to the Zeroties App for handling. Waits for a response containing the serialized response \\
+"wsForward" & "wsForwardResponse" & "wsProxyHandshake"   & Notifies the Zeroties app of an incoming WebSocket connection and establishes a proxy connection                              \\
+"wsForward" & "init"              &                      & To complete the proxy connection, the Zeroties app must send an init message over the proxy connection once it is open.      \\
+\hline
+\end{tabularx}
+\caption{The messages which are sent to Zeroties apps by the Zeroties daemon, and the responses which are expected back. After recieving a wsForwardResponse, the daemon will respond again with a "wsProxyHandshake" message.}
+\label{tab:zerotiesProtocol}
+\end{table*}
 
 \subsection{Browser Addons}
 \label{sub:browser_addons}
 
-TODO: Chris
+The Zeroties browser add-on is an intermediary layer that easily allows webapps to function as Zeroties apps.
+It exposes a simple API through the browser that abstracts away the underlying complexities of proxy communication with the Zeroties server.
+On the backend, the addon handles the establishment of proxy connections between a webapp and the Zeroties daemon, facilitating bidirectional communication between server webapps and their clients.
+The addon works by injecting the API script into all accessed webpages using a content script.
 
 \subsubsection{API}
+The Zeroties addon API consists of two functions:
+\begin{itemize}
+\item \begin{verbatim}navigator.publishServer(appName)\end{verbatim} sends a message to the Zeroties daemon, which then attempts to publish a server with the specified name.
+It returns a Promise, which resolves to a server object. From this server object, behaviour for handling HTTP requests and WebSockets can be defined.
+\item \begin{verbatim}window.addEventListener("zerotiesServicesChanged", callback)\end{verbatim} listens for the firing of the "zerotiesServicesChanged" event. This event is triggered by the Zeroties daemon whenever the list of Zeroties services available has changed.
+The second parameter is a callback function which recieves the updated services list as its argument.
+\end{itemize}
+
+Together, these APIs provide the full functionality of Zeroties to apps in the browser. 
+This API roughly mimicks the one that is provided by FlyWeb, so any webapp supported by FlyWeb will also work with Zeroties with some minimal changes, and vice versa.
+
+% what is it:
+% - addons for chrome and firefox
+% - an example of a Zeroties app
+
+% what does it do:
+% - provides a simple interface to webapps for communcation with the Zeroties daemon
+% - abstracts away all the websocket nonsense
+% - popup shows all published zeroties services on the local network
+
+% how does it work:
+% - communicates with the Zeroties daemon via websockets following request/response protocol
+% - injects a script to webapps which exposes the api via window/navigator
 
 \subsection{Communication and Control Flow in Zeroties}
 \label{sub:communication}
+\begin{figure}[h]
+    \centering
+\begin{lstlisting}
+    navigator.publishServer(Shippy.internal.appName()).then(function(server) {
+        // ...
+        server.onfetch = onFetch;
+        server.onwebsocket = onWebsocket;
+        server.onclose = onClose;
+        // ...
+    }).catch(function (err) {
+        // ...
+    });
+\end{lstlisting}
+    \caption{}
+    \label{fig:publishServer}
+\end{figure}
 
-TODO: Chris
+In this section we will discuss the flow of control and communication between Zeroties apps and the Zeroties daemon, using our Successorships app and the Zeroties addon as an example.
+\autoref{fig:publishServer} shows an example of the use of the publishServer call.
+onFetch, onWebsocket, and onClose are handler functions that are called when their respective events are triggered.
+When this function is called, in the background a WebSocket connection is established with the Zeroties daemon. 
+This WebSocket serves as the main channel of communication between the daemon and the addon, which interacts directly with the server webapp.
+Whenever a client triggers an event on the published server, for example upon recieving an HTTP request, it is forwarded to the addon via a WebSocket message.
+In the case of an HTTP request, the onfetch property of the server is then called, which generates a response to the request.
+The response is then serialized and sent back over the WebSocket as the payload of another message.
+Finally, the response is deserialized by the Zeroties daemon and dispatched back to the appropriate client.
+To make sure responses are sent back to the correct client, all messages in this series of events are accompanied by a unique identifier that is generated when the HTTP request is first recieved.
+
+WebSocket connection events follow a similar control pattern.
+When the published server recives a WebSocket connection, the Zeroties daemon notifies the addon of the new connection by a WebSocket message.
+The addon then creates a new WebSocket connection with the daemon. This means that for each client connected to the server, there is a proxy WebSocket between the daemon and the addon.
+This facilitates pseudo-direct communication between the server webapp and client.
+WebSocket messages are sent from the client to the published server, and then forwarded by the daemon over the proxy connection to the server webapp.
+The reverse is true of messages sent from the server webapp to the client.
+
+\begin{figure}[h]
+    \centering
+\begin{lstlisting}
+	window.addEventListener('zerotiesServicesChanged', function (event) {
+        // ...
+    });
+\end{lstlisting}
+    \caption{}
+    \label{fig:subscribe}
+\end{figure}
+
+\autoref{fig:subscribe} shows an example of subscribing to changes in the Zeroties services list.
+This is a much more straightforward process on the backend than publishing. The Zeroties daemon simply polls
+the network for changes in the services list using DNSSD. When a change is detected, the daemon sends a message over the WebSocket connection to the addon.
+This message contains the updated service list. The addon then causes the \begin{verbatim}window\end{verbatim} to emit a 'zerotiesServicesChanged' event, with the updated services list as its payload. 
