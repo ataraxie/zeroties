@@ -6,9 +6,6 @@
 
 # Paper
 
-* Abstract
-- Write
-
 * Introduction
 - Make link to Succ final
 
@@ -29,6 +26,7 @@
 - Scalability issues
 - Separate daemon
 - Expressiveness (URLs)
+- Network overload
 
 * Related Work
 - Read

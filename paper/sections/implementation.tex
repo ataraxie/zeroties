@@ -23,22 +23,21 @@ This functionality was required for our purpose.
 
 At the core of Zeroties is the Zeroties daemon.
 This is the piece of software that any application wishing to make use of the Zeroties services must connect to.
-The daemon runs continuously in the background on the users OS, operating a server to handle interactions with Zeroties applications.
+The daemon runs continuously in the background on the user's operating system with a server to handle interactions with Zeroties applications.
 Zeroties applications are provided the following two pieces of core functionality by interacting with the Zeroties daemon:
 \begin{itemize}
     \item The ability to publish services on the local network, via mDNS.
     \item Notifications when the list of services available on the local network changes, as discovered via DNSSD.
 \end{itemize}
-The Zeroties daemon is also responsible for managing any client HTTP requests or WebSocket connections to the server published by a Zeroties application.
-Instead of handling these events directly, the daemon simply acts as a proxy, forwarding the events to the Zeroties app as approriate.
+The Zeroties daemon is also responsible for handling any client HTTP request or WebSocket connection to the server published by a Zeroties application.
+Instead of handling these events directly, the daemon acts as a proxy, forwarding the events to the Zeroties app as approriate.
 This allows developers of Zeroties applications to easily define custom routing for HTTP requests recieved, and define custom actions to handle different WebSocket events.
 
-All communication between Zeroties applications and the Zeroties daemon is made via a WebSocket connection, following the protocol outlined below.
-On connecting to the daemon, applications are automatically subscribed to recieve notifications about changes to the list of Zeroties services available.
+All communication between Zeroties applications and the Zeroties daemon is made via a WebSocket connection, following the protocol outlined as follows: on connecting to the daemon, applications are automatically subscribed to recieve notifications about changes to the list of available Zeroties services.
 The daemon repeatedly polls the network to retrieve the current list of Zeroties services using the DNSSD protocol.
 If the list of services retrieved from the network differs from the one currently held by the daemon, an event is triggered.
-This event is fired over the WebSocket connection to a listening Zeroties application.
-To publish a server, a Zeroties application sends a message to the daemon containing the name of the service to publish.
+This event is fired over the WebSocket connection to all listening Zeroties applications.
+To publish a service, a Zeroties application sends a message to the daemon containing the name of the service to publish.
 The Zeroties daemon then spins up an HTTP server and a WebSocket server listening on the same port, and advertises the newly available service over the local network via mDNS.
 
 
@@ -65,20 +64,23 @@ The Zeroties daemon then spins up an HTTP server and a WebSocket server listenin
 % could it be improved?:
 
 
-\subsubsection{Zeroties Communication Protocol}
-This section will outline the protocol that must be followed for communcation with the Zeroties daemon.
-\paragraph{Messages to the Zeroties Daemon}
-At the moment, there is only one supported message that may be sent to the Zeroties Daemon unprompted: the "publish" message.
-The message should send a stringified JSON object of the following format: \begin{verbatim}{method: "publish", payload: {name: appName}}\end{verbatim}
-This is the message that informs the Zeroties daemon that you wish to publish a server.
+\textbf{Zeroties Communication Protocol.} Communication with the Zeroties daemon must follow a certain protocol.
 
-\paragraph{Messages from the Zeroties Daemon}
-Any app connected to the Zeroties daemon should expect to recieve and handle a message in the following format:
-\begin{verbatim}{method: "servicesChanged", services: <array of services>}\end{verbatim}
+\begin{itemize}
+\item \textit{Messages to the Zeroties Daemon}: at the moment, there is only one supported message that may be sent to the Zeroties Daemon unprompted: the \texttt{publish} message.
+The message must send a JSON string of the following format: 
+\begin{lstlisting}[breaklines]
+{method: "publish", payload: {name: appName}}
+\end{lstlisting}
+This is the message that informs the Zeroties daemon that the application wishes to publish a service.
+\item \textit{Messages from the Zeroties Daemon}: any app connected to the Zeroties daemon should expect to receive and handle a message in the following format:
+\begin{lstlisting}[breaklines]
+{method: "servicesChanged", services: <array of services>}
+\end{lstlisting}
 This is the message sent by the Zeroties daemon whenever a change in the list of Zeroties services is detected.
+\end{itemize}
 
-In addition, \autoref{tab:zerotiesProtocol} outlines the messages any Zeroties app which publishes a server should expect to see, as well as the expected responses to these messages.
-
+Table~\ref{tab:zeroties_protocol} outlines the messages sent from the Zeroties daemon sent to its applications that publish a service, as well as the expected responses to these messages.
 
 \begin{table*}[h]
     \small
@@ -92,8 +94,8 @@ Method      & Response            & Response to response & Purpose              
 "wsForward" & "init"              &                      & To complete the proxy connection, the Zeroties app must send an init message over the proxy connection once it is open.      \\
 \hline
 \end{tabularx}
-\caption{The messages which are sent to Zeroties apps by the Zeroties daemon, and the responses which are expected back. After recieving a wsForwardResponse, the daemon will respond again with a "wsProxyHandshake" message.}
-\label{tab:zerotiesProtocol}
+\caption{The messages sent to Zeroties apps by the Zeroties daemon, and the responses which are expected back. After recieving a wsForwardResponse, the daemon will respond again with a "wsProxyHandshake" message.}
+\label{tab:zeroties_protocol}
 \end{table*}
 
 \subsection{Browser Addons}

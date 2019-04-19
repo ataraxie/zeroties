@@ -20,9 +20,9 @@ Effectively, only one Internet connection is required for the whole group, rathe
 \end{figure}
 
 Evidently, this pattern of communication has one major problem: it has a single point of failure, namely the client acting as a local server. 
-Solving this problem was our motivation behind Successorships; whenever the currently serving client failed, a new client in the network was elected as the new server and connectivity in the network was re-established automatically.
-Successorship thus provided a framework to build fault-tolerant Zeroconf web applications with an easy-to-use JavaScript API.
-However, our decision to built it on Mozilla FlyWeb proved to be a major limitation.
+Solving this problem was our motivation behind Successorships; whenever the currently serving client fails, a new client in the network is elected as the new server and connectivity in the network is re-established automatically.
+Successorship provides a framework to build fault-tolerant Zeroconf web applications with an easy-to-use JavaScript API.
+However, our decision to build it on Mozilla FlyWeb proved to be a major limitation.
 Not only did we limit usage of our library to one specific browser vendor; we found out during the course of the project that Mozilla had already deprecated FlyWeb in favor of other priorities.
 To make things worse, FlyWeb had a dependency to a Firefox core component (the module responsible for launching a web server within the browser) that was only shipped in a range of versions of the developer edition of Firefox.
 In addition to this platform dependency that would, in essence, prevent our framework to be used in practice, the implementation of the Zeroconf protols in FlyWeb was incredibly slow.
