@@ -20,7 +20,7 @@ In essence, this means that an authoritative list of currently available Zerotie
 
 \item \textbf{Hosts}: there can be an arbitrary number of hosts in our local network. A host can be any device in the network with an instance of Zeroties running (i.e. any device with an OS capable of Zeroconf/DNS-SD protocols).
 
-\item \textbf{Zeroties Application}: the instance of Zeroties running on this device. 
+\item \textbf{Zeroties Daemon}: the instance of Zeroties running on this device. 
 This is an OS-level application maintaining a list of services.
 
 This list is a mirror of the service list obtained from the router by means of the Zeroconf protocols. 
@@ -29,17 +29,16 @@ We originally intended to integrate this application into browser addons, but we
 In particular, there is no possibility to start a web server or publish a Zeroconf service from within a browser addon.
 Hence our alternative solution of an OS-level app that communicates with our browser addons through stable bi-directional message channels.
 
-\item \textbf{Browser Addons}: we require browser addons that mediate between web applications and the Zeroties app. These addons expose a JavaScript API to apps built on top of Zeroties.
+\item \textbf{Browser Addons}: we require browser addons that mediate between web applications and the Zeroties daemon. These addons expose a JavaScript API to apps built on top of Zeroties.
 We have implemented addons for Google Chrome and Mozilla Firefox that constitute such a mediator and we have run Successorships apps with these addons (see Section~\ref{sec:evaluation}).
 These addons use Zeroties as a publish/subscribe service.
-Note that the Zeroties application itself is not restricted to these addons.
-They are only required for web applications running in browsers.
-Different applications can use the Zeroties service without these components.
+Note that the Zeroties daemon itself is not restricted to these addons; they are only required for web applications running in browsers.
+Different applications can utilize the services provided by the Zeroties daemon without these components.
 
-\item \textbf{Publish/Subscribe operations}: applications built on top of Zeroties interact with Zeroties using the common publish/subscribe operations.
+\item \textbf{Publish/Subscribe operations}: applications built on top of Zeroties interact with the Zeroties daemon using the common publish/subscribe operations.
 \textit{Publish} is the publishing of a Zeroties service and \textit{subscribe} makes the application receive changes to the list of available Zeroties services. 
 
-\item \textbf{Advertisements and service discovery}: the Zeroties application maintains a list of Zeroties services that is obtained from the router.
+\item \textbf{Advertisements and service discovery}: the Zeroties daemon maintains a list of Zeroties services that is obtained from the router.
 In a sense, Zeroties acts as a middleware between the router and applications built on top of Zeroties (applications using Successorships as framework being one example). 
 Whenever a Zeroties application publishes a service using the Zeroties publish/subscribe API, this will result in the publishing of a service in the network (service advertisement). 
 The second part of this communication channel is service discovery.
@@ -64,7 +63,7 @@ Our particular goals behind Zeroties are described in the following paragraphs.
 
 \textbf{Publish/subscribe strategy}. 
 We reviewed the different publish/subscribe strategies described in~\cite{eugster_2003} and decided to focus on an asynchronous invocation/callback style communication pattern as described in~\cite{eugster_2003}§3.3. 
-Asynchrony is essential for the communication between the Zeroties app and its applications.
+Asynchrony is essential for the communication between the Zeroties daemon and its applications.
 For example, applications built on Zeroties should not be blocked while waiting for the successful advertisement of a service, but rather be perform this action in the background while the application remains responsive in the foreground.
 
 \textbf{Consistency guarantees}.
@@ -98,7 +97,7 @@ Our system will remain highly reliable as long as our DNS-SD communication schem
 
 \textbf{Polling strategy:}
 We decided for a polling strategy for obtaining the list of services from the network router using DNS-SD.
-The list of available services is updated based on changes detected between the last version of the services list in the Zeroties application and the most recently polled services list.
+The list of available services is updated based on changes detected between the last version of the services list in the Zeroties daemon and the most recently polled services list.
 Clearly, this polling strategy will impose traffic on the local network, with all Zeroties hosts polling the router for the services list.
 However, we argue that frequent changes in the available services list and the assumed low number of nodes in our system model justifies this approach.
 A different strategy which could allow for a larger number of nodes without the potential problem of overloading the router with requests would be to implement this communication with a dedicated Zeroties leader and followers, for example using Paxos~\cite{lamport_2001} or Raft~\cite{ongaro_2014}.

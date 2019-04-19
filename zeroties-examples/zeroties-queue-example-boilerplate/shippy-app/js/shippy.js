@@ -90,6 +90,7 @@ let Shippy = (function() {
 		appSpec: null,
 		clientId: null,
 		isConnected: null,
+		isConnecting: null,
 		initialHtml: null,
 		isServing: null
 	};
@@ -227,6 +228,7 @@ let Shippy = (function() {
 	// ========
 
 	function connected(paramConnected) {
+		env.isConnecting = false;
 		if (typeof paramConnected !== 'undefined' && !(env.isConnected === null && paramConnected === false)) {
 			env.isConnected = paramConnected;
 			trigger(paramConnected ? 'connect' : 'disconnect');
@@ -301,7 +303,8 @@ let Shippy = (function() {
 			}
 
 			// If a service was set and we are not already connected we want to become a client
-			if (env.currentFlywebService && !env.isConnected) {
+			if (env.currentFlywebService && !env.isConnected && !env.isConnecting) {
+				env.isConnecting = true;
 				resetWaitingTime();
 				Shippy.Client.becomeClient();
 			}
@@ -365,13 +368,12 @@ let Shippy = (function() {
 Shippy.Util = (function () {
 
 	const payloadLength = [1, 4, 16, 64, 256, 1024, 4096, 1, 4, 16, 64, 256,
-		1024, 4096, 1, 4, 16, 64, 256, 1024, 4096, 16384, 65536, 262144,
-		1048576, 1, 4, 16, 64, 256, 1, 4, 16, 64, 256, 1024, 1, 4, 16, 64, 256,
-		1, 4, 16, 64, 256, 1024, 1, 4, 16, 64, 256, 1024, 4096, 16384, 65536, 262144,
+		1024, 4096, 1, 4, 16, 64, 256, 1024, 4096, , 1, 4, 16, 64, 256, 1, 4, 16, 64, 256, 1024, 1, 4, 16, 64, 256,
+		1, 4, 16, 64, 256, 1024, 1, 4, 16, 64, 256, 1024, 4096,
 		1048576, 1, 4, 16, 64, 256, 1, 1, 4, 16, 64, 256, 1024, 1, 4, 16, 64, 256,
-		4, 16, 64, 256, 1048576, 4194304, 16777216, 67108864, 1, 4, 16, 64,
-		256, 1024, 4096, 16384, 65536, 262144,
-		1024, 4096, 16384, 65536];
+		4, 16, 64, 256, 1, 4, 16, 64,
+		256, 1024, 4096,
+		1024, 4096];
 
 	function wsSend(ws, route, body) {
 		ws.send(JSON.stringify({

@@ -2,14 +2,17 @@ const WebSocket = require("ws");
 const zeroties = require('./ZerotiesServer')
 const {dnssdapi} = require("./dnssd-api");
 
+
+const DEFAULT_WS_PORT = 3004
+
 const wss = new WebSocket.Server({ port: 3004 });
 
 let clients = {};
 let servers = {};
 let services = [];
 
-async function publish(client, name, address) {
-    console.log("Publish: " + name + " @ " + address);
+async function publish(client, name) {
+    console.log("Publish: " + name);
     zs = new zeroties.ZerotiesServer;
     await zs.start().then((addressObj) => {
         zs.registerHostSocket(client);
@@ -19,6 +22,7 @@ async function publish(client, name, address) {
         servers[name] = zs;
         return Promise.resolve();
     }).catch((e) => {
+        console.error(e);
         return Promise.reject(e);
     })
 }
@@ -35,11 +39,10 @@ wss.on("connection", function(client) {
             if (msgObj.method && msgObj.data) {
                 if (msgObj.method === "publish") {
                     let payload = msgObj.data;
-                    if (payload.name && payload.address) {
+                    if (payload.name) {
                         client.appName = payload.name;
-                        client.address = payload.address;
                         console.log("publish");
-                        publish(client, payload.name, payload.address).then(function(){
+                        publish(client, payload.name).then(function(){
                             let message = {method: "connect", success: true};
                             client.send(JSON.stringify(message));
                         }).catch(function(e){
@@ -55,7 +58,7 @@ wss.on("connection", function(client) {
     });
 	client.on('close', function() {
 	    console.log("closing");
-        dnssdapi.stopAdvertising(client.appName, client.address);
+        dnssdapi.stopAdvertising(client.appName);
         delete clients[clientId];
 	});
 });
@@ -104,5 +107,6 @@ function startPollingServices() {
     };
     doPoll();
 }
+
 
 startPollingServices();

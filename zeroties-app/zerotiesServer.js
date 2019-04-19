@@ -88,8 +88,7 @@ ZerotiesServer.prototype.onProxy = function(ws, req){
 ZerotiesServer.prototype.onWebsocket = function(ws, req){
     let uuid = uuidv4();
     let address = this.server.address();
-    console.log("onwebsocket:", address);
-    let data = {serverAddress:"ws://localhost:" + address.port}; //TODO: fix this
+    let data = {serverAddress:"ws://localhost:" + address.port};
     let msgObj = {method: 'wsForward', data: data, uuid: uuid};
     this.hostSocket.send(JSON.stringify(msgObj));
     var self = this;

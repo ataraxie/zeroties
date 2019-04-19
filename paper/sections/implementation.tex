@@ -21,7 +21,23 @@ This functionality was required for our purpose.
 \subsection{Zeroties Application}
 \label{sub:zeroties_application}
 
-TODO: Chris
+what it is:
+- the core Zeroties app
+- any application wishing to use Zeroties must communicate with this app
+
+what does it do:
+- facilitates publishing services on the local network
+- notifies clients on updates to available services list
+- handles client connections and forwards to =
+
+how does it work:
+- services list is maintained/updated via mdns/dnssd
+- client apps connect to the Zeroties app via a Websocket connection
+- on connecting, clients are automatically subscribed to recieve updates about changes to the list of services
+- 
+
+could it be improved?:
+
 
 \subsubsection{API}
 

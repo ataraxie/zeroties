@@ -51,4 +51,4 @@ cleanup.sh
 *.auxlock
 *.markdown.*
 _markdown_main/
-
+*.synctex*
