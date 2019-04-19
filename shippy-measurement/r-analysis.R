@@ -10,7 +10,7 @@ require("reshape2")
 ####################################################################################################
 
 # Change this line to your own path successorships path
-# setwd('/Users/Arthur/Workspace/cpsc527-development/measurement/successorships')
+setwd('/Users/msarthur/Workspace/zeroties')
 
 serverRecovery <- read.csv(file="./shippy-measurement/output/serverRecovery.csv", head=TRUE, sep=",")
 serverRecovery <- filter(serverRecovery, time <= 200)
@@ -59,7 +59,7 @@ p <- p + theme_bw()
 p
 
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/server-recovery.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/server-recovery.pdf")
 print(p)
 dev.off()
 
@@ -73,7 +73,7 @@ p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/client-welcome.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/client-welcome.pdf")
 print(p)
 dev.off()
 
@@ -86,7 +86,7 @@ p <- p + scale_y_continuous(breaks = round(seq(0, max(clientWelcome$time), by = 
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/client-welcome-successors.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/client-welcome-successors.pdf")
 print(p)
 dev.off()
 
@@ -102,7 +102,7 @@ p1
 
 
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/client-welcome-state-size.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/client-welcome-state-size.pdf")
 print(p1)
 dev.off()
 
@@ -117,7 +117,7 @@ p <- p + theme_bw()
 p
 
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/message-RTT.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/message-RTT.pdf")
 print(p)
 dev.off()
 
@@ -130,7 +130,7 @@ p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/state-convergence.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/state-convergence.pdf")
 print(p)
 dev.off()
 
@@ -142,7 +142,7 @@ p <- p + scale_y_continuous(breaks = round(seq(0, max(stateConvergence$time), by
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/state-convergence-successors.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/state-convergence-successors.pdf")
 print(p)
 dev.off()
 
@@ -157,7 +157,7 @@ p1 <- p1 + geom_line(aes(y = SC))
 p1 <- p1 + theme_bw()
 p1
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/state-convergence-payload-size.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/state-convergence-payload-size.pdf")
 print(p1)
 dev.off()
 
