@@ -55,7 +55,7 @@ app.controller('QueueCtrl', ['$scope', 'QueueService', function ($scope, QueueSe
         $scope.isSuccessor = Shippy.internal.shouldBecomeNextServer().toString();
         $scope.clientID = Shippy.internal.clientId();
 
-	    let url = Shippy.internal.currentFlywebService() ? Shippy.internal.currentFlywebService().serviceUrl : "#";
+	    let url = Shippy.internal.currentZerotiesService() ? Shippy.internal.currentZerotiesService().serviceUrl : "#";
 
         console.log('AFTER SERVER UPDATE MY PWD IS', $scope.pwd);
         $scope.$apply();

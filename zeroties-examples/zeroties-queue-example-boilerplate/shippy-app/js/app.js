@@ -13,7 +13,7 @@
 		$("#myID").text(Shippy.internal.clientId());
 		$("#server").text(Shippy.internal.serving());
 		$("#next").text(Shippy.internal.shouldBecomeNextServer());
-		let url = Shippy.internal.currentFlywebService() ? Shippy.internal.currentFlywebService().serviceUrl : "#";
+		let url = Shippy.internal.currentZerotiesService() ? Shippy.internal.currentZerotiesService().serviceUrl : "#";
 		$("#url").text('http://' + url);
 		$("#url").attr("href", 'http://' + url);
 	}

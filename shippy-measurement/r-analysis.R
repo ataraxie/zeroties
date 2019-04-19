@@ -10,20 +10,20 @@ require("reshape2")
 ####################################################################################################
 
 # Change this line to your own path successorships path
-# setwd('/Users/Arthur/Workspace/cpsc527-development/measurement/successorships')
+setwd('/Users/msarthur/Workspace/zeroties')
 
-serverRecovery <- read.csv(file="./shippy-measurement/output/serverRecovery.csv", head=TRUE, sep=",")
+serverRecovery <- read.csv(file="./shippy-measurement/output_new/serverRecovery.csv", head=TRUE, sep=",")
 serverRecovery <- filter(serverRecovery, time <= 200)
 
-clientWelcome <- read.csv(file="./shippy-measurement/output/clientWelcome.csv", head=TRUE, sep=",")
+clientWelcome <- read.csv(file="./shippy-measurement/output_new/clientWelcome.csv", head=TRUE, sep=",")
 summary(clientWelcome$numSuccessors)
 sd(clientWelcome$numSuccessors)
 clientWelcome$numSuccessors <- as.character(clientWelcome$numSuccessors)
 
-messageRTT <- read.csv(file="./shippy-measurement/output/messageRTT.csv", head=TRUE, sep=",")
+messageRTT <- read.csv(file="./shippy-measurement/output_new/messageRTT.csv", head=TRUE, sep=",")
 messageRTT$numSuccessors <- as.character(messageRTT$numSuccessors)
 
-stateConvergence <- read.csv(file="./shippy-measurement/output/stateConvergence.csv", head=TRUE, sep=",")
+stateConvergence <- read.csv(file="./shippy-measurement/output_new/stateConvergence.csv", head=TRUE, sep=",")
 stateConvergence$numSuccessors <- as.character(stateConvergence$numSuccessors)
 stateConvergence <- filter(stateConvergence, time < 400)
 
@@ -53,13 +53,28 @@ summary(stateConvergence$time)
 p <- ggplot(serverRecovery, aes(time)) + stat_ecdf(geom = "step")
 p <- p + labs(x = 'Server recovery time (s)')
 p <- p + labs(y = 'cdf')
-p <- p + scale_x_continuous(breaks = round(seq(0, max(serverRecovery$time), by = 5), 1))
+# p <- p + scale_x_continuous(breaks = round(seq(0, max(serverRecovery$time), by = 5), 1))
 p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 p <- p + theme_bw()
 p
 
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/server-recovery.pdf")
+serverRecovery <- read.csv(file="./shippy-measurement/output_old/serverRecovery.csv", head=TRUE, sep=",")
+serverRecovery <- filter(serverRecovery, time <= 200)
+
+
+p <- ggplot(serverRecovery, aes(time)) + stat_ecdf(geom = "step")
+p <- p + labs(x = 'Server recovery time (s)')
+p <- p + labs(y = 'cdf')
+# p <- p + scale_x_continuous(breaks = round(seq(0, max(serverRecovery$time), by = 5), 1))
+p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
+p <- p + theme_bw()
+p
+
+
+
+
+pdf("/Users/msarthur/Workspace/zeroties/figures/server-recovery.pdf")
 print(p)
 dev.off()
 
@@ -73,7 +88,7 @@ p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/client-welcome.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/client-welcome.pdf")
 print(p)
 dev.off()
 
@@ -86,7 +101,7 @@ p <- p + scale_y_continuous(breaks = round(seq(0, max(clientWelcome$time), by = 
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/client-welcome-successors.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/client-welcome-successors.pdf")
 print(p)
 dev.off()
 
@@ -102,7 +117,7 @@ p1
 
 
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/client-welcome-state-size.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/client-welcome-state-size.pdf")
 print(p1)
 dev.off()
 
@@ -117,7 +132,7 @@ p <- p + theme_bw()
 p
 
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/message-RTT.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/message-RTT.pdf")
 print(p)
 dev.off()
 
@@ -130,7 +145,7 @@ p <- p + scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/state-convergence.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/state-convergence.pdf")
 print(p)
 dev.off()
 
@@ -142,7 +157,7 @@ p <- p + scale_y_continuous(breaks = round(seq(0, max(stateConvergence$time), by
 p <- p + theme_bw()
 p
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/state-convergence-successors.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/state-convergence-successors.pdf")
 print(p)
 dev.off()
 
@@ -157,7 +172,7 @@ p1 <- p1 + geom_line(aes(y = SC))
 p1 <- p1 + theme_bw()
 p1
 
-pdf("/Users/Arthur/Workspace/cpsc527-development/report/successorships/paper/figures/state-convergence-payload-size.pdf")
+pdf("/Users/msarthur/Workspace/zeroties/figures/state-convergence-payload-size.pdf")
 print(p1)
 dev.off()
 
