@@ -1,6 +1,9 @@
 \section{Implementation}
 \label{sec:implementation}
 
+This section describes the languages and platforms on which Zeroties is based.
+It then illustrates the different components in Zeroties: the daemon, the browser addon, and the communication between these components.
+
 \subsection{Languages and Platforms}
 \label{sub:languages_and_platforms}
 
@@ -83,40 +86,50 @@ Table~\ref{tab:zeroties_protocol} outlines the messages sent from the Zeroties d
 
 
 \begin{table*}[h]
-    \small
-    \centering
-\begin{tabularx}{\textwidth}{|l|l|l|l|}
-    \hline
-Method      & Response            & Response to response & Purpose                                                                                                                       \\
+\small
+\centering
+\caption{The messages sent to Zeroties apps by the Zeroties daemon, and the responses which are expected back. After recieving a \texttt{wsForwardResponse}, the daemon will respond again with a \texttt{wsProxyHandshake} message.}
+\def\arraystretch{2}
+\begin{tabularx}{\textwidth}{l|l|l|l}
+\textbf{Method} & \textbf{Response} & \textbf{Response to response} & \textbf{\pbox{9.5cm}{Purpose}}\\
 \hline
-"request"   & "response"          &                      & Dispatches an incoming HTTP request to the Zeroties App for handling. Waits for a response containing the serialized response \\
-"wsForward" & "wsForwardResponse" & "wsProxyHandshake"   & Notifies the Zeroties app of an incoming WebSocket connection and establishes a proxy connection                              \\
-"wsForward" & "init"              &                      & To complete the proxy connection, the Zeroties app must send an init message over the proxy connection once it is open.      \\
-\hline
+\texttt{request} & \texttt{response} & & \pbox{9.5cm}{Dispatches an incoming HTTP request to the Zeroties App for handling. Waits for a response containing the serialized response}\\ \hline
+\texttt{wsForward} & \texttt{wsForwardResponse} & \texttt{wsProxyHandshake} & \pbox{9.5cm}{Notifies the Zeroties app of an incoming WebSocket connection and establishes a proxy connection}\\ \hline
+\texttt{wsForward} & \texttt{init} & & \pbox{9.5cm}{To complete the proxy connection, the Zeroties app must send an init message over the proxy connection once it is open}\\
 \end{tabularx}
-\caption{The messages sent to Zeroties apps by the Zeroties daemon, and the responses which are expected back. After recieving a wsForwardResponse, the daemon will respond again with a "wsProxyHandshake" message.}
 \label{tab:zeroties_protocol}
 \end{table*}
 
 \subsection{Browser Addons}
 \label{sub:browser_addons}
 
-The Zeroties browser add-on is an intermediary layer that easily allows webapps to function as Zeroties apps.
-It exposes a simple API through the browser that abstracts away the underlying complexities of proxy communication with the Zeroties server.
-On the backend, the addon handles the establishment of proxy connections between a webapp and the Zeroties daemon, facilitating bidirectional communication between server webapps and their clients.
+The Zeroties browser addon is an intermediary layer that easily allows web applications to function as Zeroties apps.
+They expose a simple API that abstracts away the underlying complexities of proxy communication with the Zeroties server.
 The addon works by injecting the API script into all accessed webpages using a content script.
 
-\subsubsection{API}
+\textbf{API for web applications.}
 The Zeroties addon API consists of two functions:
 \begin{itemize}
-\item \begin{verbatim}navigator.publishServer(appName)\end{verbatim} sends a message to the Zeroties daemon, which then attempts to publish a server with the specified name.
-It returns a Promise, which resolves to a server object. From this server object, behaviour for handling HTTP requests and WebSockets can be defined.
-\item \begin{verbatim}window.addEventListener("zerotiesServicesChanged", callback)\end{verbatim} listens for the firing of the "zerotiesServicesChanged" event. This event is triggered by the Zeroties daemon whenever the list of Zeroties services available has changed.
+\item \texttt{navigator.publishServer(appName)} sends a message to the Zeroties daemon, which then attempts to publish a server with the specified name.
+It returns a Promise, which resolves to a server object. 
+From this server object, behaviour for handling HTTP requests and WebSockets can be defined.
+\item \texttt{window.addEventListener("zerotiesServicesChanged", callback)} listens for the  \texttt{zerotiesServicesChanged} event. This event is triggered by the Zeroties daemon whenever the list of Zeroties services available has changed.
 The second parameter is a callback function which recieves the updated services list as its argument.
 \end{itemize}
 
-Together, these APIs provide the full functionality of Zeroties to apps in the browser. 
-This API roughly mimicks the one that is provided by FlyWeb, so any webapp supported by FlyWeb will also work with Zeroties with some minimal changes, and vice versa.
+This API roughly mimicks the one that was provided by FlyWeb, so migrating a (Successorships-)FlyWeb application to Zeroties involves only minimal changes\footnote{Obviously, we did not want to keep the name \texttt{flywebServicesChanged} for our event.}.
+
+The Zeroties addon also contains a browser menu button that renders a popup upon click showing a list of currently available services.
+This list is updated live through the WebSocket channel to the Zeroties daemon.
+Figure~\ref{fig:addon} shows a screenshot of this popup with a single service being published.
+A click on a service in this list will open a new tab and connect to the service as a client.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[keepaspectratio,width=6cm]{addon}
+    \caption{Addon services menu.}
+    \label{fig:addon}
+\end{figure}
 
 % what is it:
 % - addons for chrome and firefox
@@ -133,53 +146,48 @@ This API roughly mimicks the one that is provided by FlyWeb, so any webapp suppo
 
 \subsection{Communication and Control Flow in Zeroties}
 \label{sub:communication}
-\begin{figure}[h]
-    \centering
-\begin{lstlisting}
-    navigator.publishServer(Shippy.internal.appName()).then(function(server) {
-        // ...
-        server.onfetch = onFetch;
-        server.onwebsocket = onWebsocket;
-        server.onclose = onClose;
-        // ...
-    }).catch(function (err) {
-        // ...
-    });
-\end{lstlisting}
-    \caption{}
-    \label{fig:publishServer}
-\end{figure}
 
-In this section we will discuss the flow of control and communication between Zeroties apps and the Zeroties daemon, using our Successorships app and the Zeroties addon as an example.
-\autoref{fig:publishServer} shows an example of the use of the publishServer call.
-onFetch, onWebsocket, and onClose are handler functions that are called when their respective events are triggered.
-When this function is called, in the background a WebSocket connection is established with the Zeroties daemon. 
-This WebSocket serves as the main channel of communication between the daemon and the addon, which interacts directly with the server webapp.
+This section discusses the flow of control and the communication between Zeroties apps and the Zeroties daemon, using Successorships as an example.
+Listing~\ref{lst:publish_service} shows an example usage of the \texttt{publishServer} API.
+The functions \texttt{onFetch}, \texttt{onWebsocket}, and \texttt{onClose} are event listeners that are called when their respective events are dispatched.
+
+\begin{lstlisting}[caption={Publishing of a service},label={lst:publish_service}]
+navigator.publishServer(Shippy.internal.appName()).then(function(server) {
+  // ...
+  server.onfetch = onFetch;
+  server.onwebsocket = onWebsocket;
+  server.onclose = onClose;
+  // ...
+}).catch(function (err) {
+  // ...
+});
+\end{lstlisting}
+
+When the \texttt{onWebsocket} function is called, a WebSocket connection with the Zeroties daemon is established.
+This WebSocket serves as the main channel of communication between the daemon and the addon, which interacts directly with the web application.
 Whenever a client triggers an event on the published server, for example upon recieving an HTTP request, it is forwarded to the addon via a WebSocket message.
-In the case of an HTTP request, the onfetch property of the server is then called, which generates a response to the request.
+In the case of an HTTP request, the \texttt{onFetch} function is called, which generates a response to the request.
 The response is then serialized and sent back over the WebSocket as the payload of another message.
 Finally, the response is deserialized by the Zeroties daemon and dispatched back to the appropriate client.
 To make sure responses are sent back to the correct client, all messages in this series of events are accompanied by a unique identifier that is generated when the HTTP request is first recieved.
 
 WebSocket connection events follow a similar control pattern.
-When the published server recives a WebSocket connection, the Zeroties daemon notifies the addon of the new connection by a WebSocket message.
-The addon then creates a new WebSocket connection with the daemon. This means that for each client connected to the server, there is a proxy WebSocket between the daemon and the addon.
-This facilitates pseudo-direct communication between the server webapp and client.
+When the published server recives a WebSocket connection, the Zeroties daemon notifies the addon of the new connection with a WebSocket message.
+The addon then creates a new WebSocket connection with the daemon. 
+This means that for each client connected to the server, there is a proxy WebSocket between the daemon and the addon.
+This facilitates pseudo-direct communication between the server webapp and its clients.
 WebSocket messages are sent from the client to the published server, and then forwarded by the daemon over the proxy connection to the server webapp.
-The reverse is true of messages sent from the server webapp to the client.
+The reverse is true for messages sent from the server webapp to the client.
 
-\begin{figure}[h]
-    \centering
-\begin{lstlisting}
-	window.addEventListener('zerotiesServicesChanged', function (event) {
-        // ...
-    });
+Listing~\ref{lst:service_discovery} shows an example of subscribing to changes in the Zeroties services list.
+This is a fairly straightforward process: the Zeroties daemon polls the network for changes in the services list using DNSSD.
+
+\begin{lstlisting}[caption={Service discovery},label={lst:service_discovery}]
+window.addEventListener('zerotiesServicesChanged', function (event) {
+  // ...
+});
 \end{lstlisting}
-    \caption{}
-    \label{fig:subscribe}
-\end{figure}
 
-\autoref{fig:subscribe} shows an example of subscribing to changes in the Zeroties services list.
-This is a much more straightforward process on the backend than publishing. The Zeroties daemon simply polls
-the network for changes in the services list using DNSSD. When a change is detected, the daemon sends a message over the WebSocket connection to the addon.
-This message contains the updated service list. The addon then causes the \begin{verbatim}window\end{verbatim} to emit a 'zerotiesServicesChanged' event, with the updated services list as its payload. 
+When a change is detected, the daemon sends a message over the WebSocket connection to the addon.
+This message contains the updated services list.
+The addon then dispatches a \texttt{zerotiesServicesChanged} event on the global \texttt{window} object with the updated services list as payload.

@@ -28,9 +28,8 @@ port.onMessage.addListener(function(msgJson) {
 $('#zeroties-services').on("click", "a", function() {
 	var updateObject = {url: $(this).attr('href')};
 	if (chrome) {
-		chrome.tabs.update(updateObject);
+		chrome.tabs.create(updateObject);
 	} else if (browser) {
-		browser.tabs.update(updateObject);
+		browser.tabs.create(updateObject);
 	}
-	window.close();
 });

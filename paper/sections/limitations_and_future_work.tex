@@ -1,2 +1,53 @@
 \section{Limitations and Future Work}
 \label{sec:limitations_and_future_work}
+
+We are generally very content with the substantial improvements we achieved with Zeroties for Zeroconf web applications and especially our Successorships framework.
+Nevertheless, a range of limitations and potentials for improvements remains.
+Also, with this project we have just targeted one subsection of the \textit{Limitations and Future Work} section in the Successorships paper\footnote{XXX}: \textit{Platform dependency and time-to-recovery.}
+We can definitely see research opportunities in this field.
+With Zeroties in particular, we see limitations in our \textit{evaluation}, \textit{scalability}, \textit{deployability}, \textit{usability and network requirements}, and \textit{imposed load} on the network.
+
+\textbf{Threats to our evaluation.}
+The performance measurements we performed for Zeroties were run on one machine with multiple browser windows representing different nodes.
+We had intended to run our scenario with multiple machines, just as we did in the Successorships evaluation, which we had run on a small Wi-Fi network created with a mobile hotspot.
+Unfortunately, we were not able to set up such a network such that the Zeroconf protocols were supported.
+Neither did the Wi-Fi of our workplace support these.
+We have found that this is due to special security restrictions and we could verify that our system works on a regular home Wi-Fi.
+However, we were not prepared for these difficulties and had to fall back on a single-machine evaluation due to time constraints.
+Despite all this, we argue that our evaluation serves its purpose as initial proof for significant performance improvement with Zeroties compared to the old FlyWeb version: after all, we ran our scenario on one machine with both versions and the FlyWeb version showed performance comparable to the numbers from the evaluation of Successorships.
+
+\textbf{Scalability.}
+We have noticed degradation in performance with higher number of nodes in our experiments: the system becomes notably slower with more than approx. 10 clients joining the network.
+Additionally, we have observed that inconsistencies occurred using the Firefox version of the Zeroties addon after approx. 10 clients joining the network and sending a significant amount of messages.
+This was also the reason for performing our performance measurements only with Google Chrome.
+While, further evaluation with Firefox after fixing these issues would harden our results, we do not think our sole focus on Chrome for now constitutes a significant threat.
+But these issues certainly need some inspection and debugging before Zeroties can be deployed for larger and more critical applications.
+
+\textbf{Deployability.}
+What we have implemented as the \textit{Zeroties daemon} was originally intended to reside in the browser addon.
+We could not find a way to achieve this due to the security restrictions imposed on addons by browsers (i.e. they can start neither a HTTP server nor a WebSocket server).
+This is why Zeroties users will now have to start the OS-level (i.e. Node.js application) daemon to make use of our system.
+We intend to research further possibilities to go without this separate dependency in the future.
+For example, there may be a more advanced possibility for security configuration in browsers that we were not able to find yet.
+
+\textbf{Usability and network requirements.}
+Different characteristics of Zeroties in its current version may distract users (or even make our system entirely unusable for them). 
+First, we are using hard-coded ports for our HTTP and WebSocket servers.
+While one might think initially that this could simply be solved by providing configuration options, it is actually not that simple: depending on the number of applications, Zeroties may need multiple HTTP and WebSocket servers that must be started and stopped dynamically.
+Nevertheless, such configuration options are required because, as obvious, hard-coded port numbers are not feasible in practice.
+Another problem in terms of usability are the URLs of Zeroties servives that remain IP-based.
+This has already been a limitation in Successorships and we could not yet overcome this problem.
+Finally, we have not yet implemented filtering of DNS-SD services to only include Zeroties services in the lists of available services.
+In practice, this means that, for example, a Google Chromecast service may currently appear in the Zeroties menu.
+This is a simple fix using an internal prefix for Zeroties service keys and respective filtering of all DNS-SD services.
+
+\textbf{Network load.}
+Each Zeroties daemon currently polls the network router for a list of available Zeroties services.
+While we see this approach mostly as justified in our specific target environments (see Section~\ref{sub:design}), it has been hard for us to estimate how much load our system will impose on the local network.
+Currently we have configured our daemon to poll the service list in intervals of one second.
+With each host participating in a Zeroties network performing this polling strategy, there is a risk of significant impact on the network.
+We intend to evaluate this in more detail with a future evaluation of Zeroties.
+
+
+
+

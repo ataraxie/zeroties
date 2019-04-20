@@ -7,7 +7,7 @@ const port = 3000;
 
 const server = http.createServer(app);
 
-app.use(serveStatic('shippy-app', {
+app.use(serveStatic('zeroties-app', {
 	index: ['index.html']
 }));
 

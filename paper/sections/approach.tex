@@ -1,6 +1,8 @@
 \section{Approach}
 \label{sec:approach}
 
+This section describes our target environment and system architecture, and the design decisions and goals behind Zeroties.
+
 \subsection{Environment and System Architecture}
 \label{sub:architecture}
 
@@ -71,12 +73,15 @@ For example, applications built on Zeroties should not be blocked while waiting 
 The shared state in Zeroties systems is defined by (1) the list of currently available Zeroties services, and (2) the application-defined state that is shared between hosts in the network.
 If an instance is not up-to-date with this state, this can have different consequences. 
 First, as long as applications are not notified that a new service has been created, that service remains unavailable.
-Second, a service that has failed but remains in the list can result in an error upon connecting to that service. 
+Second, a service that has failed but remains in the list can result in an error upon connecting to that service.
 Third, if notifications about updates of the application-defined state are delayed between hosts, this can have significant consequences.
 However, given our described system model of local ad-hoc network applications, we postulate that it is sufficient for most use cases if hosts converge to a consistent state \textit{eventually} and therefore decided for \textit{optimistic replication}~\cite{saito_2005}.
 The paper defines \textit{eventual consistency} as ``a weak guarantee [that] is enough for many optimistic replication applications, but some systems provide stronger guarantees, e.g., that a replica's state is never more than one hour old''.
 Due to our requirements for an asynchronous publish/subscribe pattern and our awarenes that, according to the CAP theorem~\cite{gilbert_2012} we cannot achieve both high consistency and availability, our work can be considered as trading consistency in favor of high availability.
-Nevertheless, we consider the time frames for reaching consensus in our previous project (> 30 seconds in many cases) as insufficient and we want our new system to do so within a time frame of \textit{5 seconds}.
+Nevertheless, we consider the time frames for reaching consensus after a failure in our previous project (> 30 seconds in many cases) as insufficient and we want our new system to do so within a time frame of \textit{5 seconds}.
+In the absence of fault, i.e. with application-defined messages being passed between nodes, 
+we want our system converge to a consistent state within a time frame of \textit{1 second}.
+The latter case was not a problem in the previous FlyWeb-based implementation and our goal is, in a sense, to simply not make the system slower.
 
 \textbf{Fault tolerance}:
 In the case of Zeroties, fault tolerance is directly connected to consistency guarantees.
@@ -85,7 +90,7 @@ The service that was offered by the failed server will be removed from the list 
 The application can then decide how to deal with this change.
 In the Successorships example, this will involve the selection of a new server (and therefore a new Zeroties service) and other clients connecting to it.
 In that sense, the system will have recovered from the failure of the server (and therefore have converged to a consistent state), as soon as (1) the failed service was removed from the list, (2) the newly elected service was added to the list, and (3) all changes propagated to all clients in the system.
-Consequently, Zeroties enables its applications to recover from failures in the same time frame as the system reaches consensus.
+Consequently, Zeroties enables its applications to recover from failures in the same time frame as the system reaches consensus in the cause of a failure.
 
 \textbf{Performance}:
 As described earlier, the performance of our previous implementation of Zeroconf based on FlyWeb showed significant bottlenecks and proved insufficient for practical usage.

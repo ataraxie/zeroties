@@ -5,7 +5,7 @@
  */
 let Trace = (function () {
 
-	const TRACE_ENABLED = true;
+	const TRACE_ENABLED = false;
 
 	const logKey = 'shippy:log:' + Date.now().toString() + ':' + Math.random().toString();
 

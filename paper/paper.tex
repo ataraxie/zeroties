@@ -20,6 +20,9 @@
 \usepackage{lipsum}
 \usepackage{tabularx}
 \usepackage{makecell}
+\usepackage{pbox}
+\usepackage{caption}
+\captionsetup[table]{skip=5pt}
 
 
 % Enabling Javascript syntax highlight in code snippet - BEGIN 
@@ -58,6 +61,8 @@
    xleftmargin=0.5em,
    belowcaptionskip=0em
 }
+
+\newcommand{\mybox}[1]{\vspace{5pt}\noindent\fbox{\parbox{0.97\columnwidth}{#1}}\vspace{5pt}}
 
 \setlength{\belowcaptionskip}{-1em}
 % Enabling Javascript syntax highlight in code snippet - END

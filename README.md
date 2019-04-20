@@ -1,26 +1,44 @@
-# Successorships
+# Zeroties - No more ties!
 
-You made it - welcome to a new age of fault-tolerant local Web apps!
+Zeroties finally brings platform-independence to our highly acclaimed [Successorships](https://github.com/ataraxie/successorships) framework! And now makes what was SLOOOOW before HYPERFAST!
+
+## Requirements
+
+* Recent version of [NPM](https://www.npmjs.com/)
+* Google Chrome or Mozilla Firefox
 
 ## Setup
 
-* Make sure you have current versions of Node and NPM installed
-* Install a Flyweb-enabled Firefox Developer Edition. We went with version [50.0a2](https://download-origin.cdn.mozilla.net/pub/firefox/nightly/2016/08/2016-08-28-00-40-09-mozilla-aurora/firefox-50.0a2.en-US.mac.dmg
-)
-* Enable FlyWeb in Firefox
-  * Go to about:config
-  * Search for dom.flyweb.enabled and set it to true
-* Optional for usability: you may also need to add the FlyWeb button to the toolbar
-  * Burger menu => Customize => Drag FlyWeb item to menu bar
-* Install the Shippy addon
-  * Firefox burger menu => Add-ons => Extensions => Configuration dropdown => Install Add-on From File...
-  * Select shippy-addon/shippy-addon.xpi
+* Install the dependencies of the Zeroties daemon
+  * cd into `./zeroties-app`
+  * Run `npm install`
+* Install the browser addon
+  * (We are currently still in development stage, so developer mode is required)
+  * Chrome:
+    * Open URL `chrome://extensions` in Chrome
+    * Click `Load unpacked extension`
+    * Open directory `./zeroties-browser-addon`
+  * Firefox:
+    * Open URL `about:debugging` in Firefox
+    * Click `Load Temporary Add-on`
+    * Select any file in the `./zeroties-browser-addon` directory
+    * (Note that on Firefox dev addons need to be installed again after each restart)
 
-## Run the examples
+## Run an example
 
-* cd into any of the examples in shippy-examples/
-* `npm install`
-* `npm start`
-* Go to http://localhost:3000 using the mentioned Firefox version
-* Open the URL shown in the applications in multiple tabs to see how multiple clients behave
-* Close the first tab and another client will become the server
+* Run the Zeroties daemon
+  * cd into `./zeroties-app`
+  * Run `npm start`
+* Run any example
+  * cd into `./zeroties-example/%EXAMPLE%`
+  * Run `npm start`
+* In Chrome or Firefox
+  * Go to http://localhost:3000 (yes it's hardcoded, hope you got 3000 free!)
+  * This will open a webapp that advertises a Zeroties service
+  * Open the Zeroties menu by clicking on the Z button at the top right
+  * At least one entry should appear in the list
+    * If the popup doesn't work for some reason, just use the link displayed in the app
+  * Open the URL as many times as you want
+    * These will become clients
+  * Kill the tab in which you opened localhost:3000
+  * The clients will be disconnected an recover after a short time (approx. 1.5 sec => see eval, hehehe)

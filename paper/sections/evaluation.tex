@@ -1,6 +1,8 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
+This section illustrates our twofold evaluation of Zeroties: our sample application and our performance measurements.
+
 \subsection{Sample Successorships Application}
 
 In our previous project, we created a web application using the presentation framework \textit{Reveal.js}~\footnote{https://github.com/hakimel/reveal.js/, accessed 2019-04-17} to present Successorships to graduate students of the computer science department of the University of British Columbia.
@@ -14,8 +16,8 @@ A significant decrease in time-to-recovery after failure could clearly be observ
 
 \subsection{Empirical Evaluation}
 
-We reproduced the performance measurements from the previous paper in order to analyze changes in performance from the old to the new version of Successorships.
-We collected traces for system recovery for the following scenario, first with the old FlyWeb-based version on Mozilla Firefox, and then with the new Zeroties-based version on Google Chrome:
+We reproduced the performance measurements from the previous project in order to analyze changes in performance from the old to the new version of Successorships.
+We collected traces for system recovery and state convergence for the following scenario:
 \begin{itemize}
 \item One node starts the app and becomes the server.
 \item 5 nodes start the app and become clients.
@@ -24,14 +26,15 @@ We collected traces for system recovery for the following scenario, first with t
 \item The other 4 clients become clients to the new server.
 \end{itemize}
 
-This process was first repeated until only the last node remained and became the server.
+The process was first repeated until only the last node remained and became the server.
 Afterwards, 5 more nodes started the application and became clients of that last remaining node from the last run that was now serving.
 The process was then repeated once more until the last node was finally terminated.
-In total, this process therefore involved 9 recoveries from server failures.
-The scenario was performed on one machine where one node constituted one browser window.
+In total, this process therefore involved 9 recoveries from server failures and 70 state changes while the system ran without failure.
+We performed this scenario first with the old FlyWeb-based version on Mozilla Firefox, and then with the new Zeroties-based version on Google Chrome.
+We used one machine where one node constituted one browser window.
 While we acknowledge that a multi-machine experiment would have been more representative, we argue that for the analysis of performance changes between the two version this infrastructural change would not be significant.
 
-Table~\ref{tbl:eval:time-to-recovery} shows the time to recovery in seconds for the described scenario with FlyWeb and Zeroties.
+\textbf{Time to recovery}. Table~\ref{tbl:eval:time-to-recovery} shows the time to recovery in seconds for the described scenario with FlyWeb and Zeroties.
 It is visible, that the Zeroties version recovered from failures nearly 10 times faster with little variation.
 Figure~\ref{fig:eval:server-recovery} compares the cumulative distribution between the two versions that confirms this finding.
 
@@ -64,3 +67,11 @@ Figure~\ref{fig:eval:server-recovery} compares the cumulative distribution betwe
     \caption{Comparison of CDFs for server discovery between FlyWeb-based and Zeroties-based versions of Successorships.}
     \label{fig:eval:server-recovery}
 \end{figure}
+
+\textbf{State convergence without failures.}
+As mentioned before, our scenario involced 70 state changes in the absence of failures. The median times taken for these state changes was \textit{0.027 seconds} in the FlyWeb version and \textit{0.006 seconds}. 
+
+\textit{Consequently, we have met our goal defined in Section~\ref{sub:design} to reach consensus after system failure within 5 seconds.
+Since every failure involves (1) the publishing of a new service, (2) notifications to all clients, and (3) connection of all clients, we deduce additionally that our performance goals described in Section~\ref{sub:design} have been met.}
+
+\textit{We have also met our goal defined in Section~\ref{sub:design} to (1) provide at least the same performance for state convergence without failure as with the previous version. Additionally, we have met our goal of communication between the Zeroties daemon and its applications being performed in the range of milliseconds.}
