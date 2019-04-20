@@ -9,7 +9,7 @@ The adoption of standards that eliminate the burden of manual configuration of n
 Using the \textit{Zeroconf} protocols, devices can publish named services in the local network and discover such services automatically in an ad-hoc fashion.
 While most applications for Zeroconf networks are shipped with specific hardware (e.g. Google Chromecast dongle) there have recently been attempts to provide software environments for developers to enable them write their own applications on already existing hardware infrastructure.
 One such application was Mozilla FlyWeb\footnote{https://wiki.mozilla.org/FlyWeb}, an addon for the Firefox browser that made it possible to advertise and discover services from within Web applications through a JavaScript API.
-In a previous project, we created \textit{Successorships}~\footnote{https://github.com/ataraxie/successorships}, a JavaScript library exposing an easy-to-use API to build fault-tolerant Zeroconf web applications.
+In a previous project, we created \textit{Successorships}~\footnote{https://github.com/ataraxie/successorships/blob/zeroties-submission/successorships-submission.pdf, accessed 2019-04-19}, a JavaScript library exposing an easy-to-use API to build fault-tolerant Zeroconf web applications.
 Successorships was built on top of Mozilla Flyweb as one main part of its architecture.
 This decision confronted us with significant problems:
 \begin{itemize}
@@ -18,7 +18,7 @@ This decision confronted us with significant problems:
     \item FlyWeb contained a bug that made our library usable on MacOS only.
 \end{itemize}
 
-To overcome our troubles in Successorships, we introduce Zeroties (zero ties), a platform-independent asynchronous publish/subscribe service for Zeroconf advertisement and discovery.
+To overcome our troubles in Successorships, we introduce Zeroties\footnote{https://github.com/ataraxie/zeroties}, a platform-independent asynchronous publish/subscribe service for Zeroconf advertisement and discovery.
 We carefully reviewed different publish/subscribe designs~\cite{eugster_2003} and implemented a communication scheme based on \textit{asynchronous notifications}.
 The operations exposed by Zeroties are as follows:
 \begin{itemize}
